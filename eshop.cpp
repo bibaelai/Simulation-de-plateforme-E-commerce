@@ -479,5 +479,12 @@ int main() {
     cout << "     GOODBYE!\n";
     cout << "========================================\n";
 
+
+    //Ajouter votre class Ici Les filles !! : 
+
     return 0;
+<<<<<<< HEAD
 }
+=======
+} 
+>>>>>>> 184010501e008ef959fa28e55f8a5e5bccfa3c30
