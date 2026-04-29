@@ -317,38 +317,74 @@ public:
     }
 };
 
-// ==================== MAIN ====================
+// ==================== HELPER FUNCTIONS ====================
 
-int main() {
+// Sign up a new user
+Person* signUpUser() {
+    cout << "\n========================================\n";
+    cout << "         CREATE NEW ACCOUNT\n";
     cout << "========================================\n";
-    cout << "     E-COMMERCE PLATFORM\n";
-    cout << "========================================\n\n";
 
-    int choice;
-    Person* user = nullptr;  // POLYMORPHISM: can point to Client OR Seller
-
-    cout << "Are you:\n";
+    int roleChoice;
+    cout << "Choose your role:\n";
     cout << "1. Client (Buyer)\n";
     cout << "2. Seller\n";
     cout << "Choice: ";
-    cin >> choice;
+    cin >> roleChoice;
 
-    if (choice == 1) {
-        user = new Client(1, "Alice", "Smith", "alice@email.com", "0612345678", "123 Main St");
-    } else if (choice == 2) {
-        user = new Seller(2, "Bob", "Jones", "bob@email.com", "0698765432", "Bob's Electronics");
-    } else {
-        cout << "Invalid choice!\n";
-        return 1;
+    string fn, ln, em, ph, pwd;
+
+    cout << "\n--- Enter Your Details ---\n";
+    cout << "First Name: ";
+    cin >> fn;
+    cout << "Last Name: ";
+    cin >> ln;
+    cout << "Email: ";
+    cin >> em;
+    cout << "Phone (starts with 06, 10 digits): ";
+    cin >> ph;
+    cout << "Password: ";
+    cin >> pwd;
+
+    static int nextId = 100; // Simple ID generator
+
+    if (roleChoice == 1) {
+        string address;
+        cout << "Address: ";
+        cin.ignore();
+        getline(cin, address);
+        Client* client = new Client(nextId++, fn, ln, em, ph, address);
+        client->signUp(fn, ln, em, ph, pwd); // Set password properly
+        cout << "\nClient account created successfully!\n";
+        return client;
+    } 
+    else if (roleChoice == 2) {
+        string shop;
+        cout << "Shop Name: ";
+        cin.ignore();
+        getline(cin, shop);
+        Seller* seller = new Seller(nextId++, fn, ln, em, ph, shop);
+        seller->signUp(fn, ln, em, ph, pwd); // Set password properly
+        cout << "\nSeller account created successfully!\n";
+        return seller;
+    } 
+    else {
+        cout << "Invalid role choice!\n";
+        return nullptr;
+    }
+}
+
+// Log in an existing user
+Person* loginUser(Person* user) {
+    if (user == nullptr) {
+        cout << "\nNo account found! Please sign up first.\n";
+        return nullptr;
     }
 
-    // POLYMORPHISM: same call, different behavior
-    cout << "\n" << *user << "\n";
-    user->displayRole();
-    user->dashboard();
+    cout << "\n========================================\n";
+    cout << "              LOGIN\n";
+    cout << "========================================\n";
 
-    // Login
-    cout << "\n--- LOGIN ---\n";
     string em, pwd;
     cout << "Email: ";
     cin >> em;
@@ -356,7 +392,61 @@ int main() {
     cin >> pwd;
 
     if (user->login(em, pwd)) {
-        // POLYMORPHISM: dashboard shows different menu based on type
+        return user;
+    }
+    return nullptr;
+}
+
+// ==================== MAIN ====================
+
+int main() {
+    cout << "========================================\n";
+    cout << "     E-COMMERCE PLATFORM\n";
+    cout << "========================================\n\n";
+
+    Person* user = nullptr;
+    int choice;
+
+    // STEP 1: Login or Sign Up
+    cout << "Welcome! What would you like to do?\n";
+    cout << "1. Log In (existing account)\n";
+    cout << "2. Sign Up (create new account)\n";
+    cout << "Choice: ";
+    cin >> choice;
+
+    if (choice == 1) {
+        // Try to login - but need an account first
+        cout << "\nYou need an account to log in. Please sign up first.\n";
+        user = signUpUser();
+        if (user) {
+            // Auto-login after signup or ask to login
+            cout << "\nPlease log in with your new credentials:\n";
+            user = loginUser(user);
+        }
+    } 
+    else if (choice == 2) {
+        // Sign up
+        user = signUpUser();
+        if (user) {
+            // After signup, ask them to log in
+            cout << "\nAccount created! Please log in to continue:\n";
+            user = loginUser(user);
+        }
+    } 
+    else {
+        cout << "Invalid choice!\n";
+        return 1;
+    }
+
+    // STEP 2: If logged in, start the platform
+    if (user && user->getLoginStatus()) {
+        cout << "\n========================================\n";
+        cout << "         WELCOME TO THE PLATFORM\n";
+        cout << "========================================\n";
+
+        // POLYMORPHISM: same call, different behavior
+        cout << "\n" << *user << "\n";
+        user->displayRole();
         user->dashboard();
 
         // Dynamic cast to access specific methods
@@ -375,10 +465,14 @@ int main() {
             seller->viewProducts();
             seller->makeSale(99.99);
         }
+
+        // Logout and cleanup
+        user->logout();
+    } 
+    else {
+        cout << "\nLogin failed or cancelled. Goodbye!\n";
     }
 
-    // Logout and cleanup
-    user->logout();
     delete user;
 
     cout << "\n========================================\n";
@@ -386,4 +480,4 @@ int main() {
     cout << "========================================\n";
 
     return 0;
-} 
+}
