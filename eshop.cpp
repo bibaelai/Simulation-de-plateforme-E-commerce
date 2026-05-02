@@ -11,97 +11,89 @@ protected:
     string firstName;
     string lastName;
     string email;
-    string phone;
     string password;
     bool isLoggedIn;
 
 public:
-    // Constructor
+    // Default constructor
     Person() {
-        id = 0;
-        firstName = "NULL";
-        lastName = "NULL";
-        email = "NULL";
-        phone = "0";
-        password = "NULL";
-        isLoggedIn = false;
+        id          = 0;
+        firstName   = "NULL";
+        lastName    = "NULL";
+        email       = "NULL";
+        password    = "NULL";
+        isLoggedIn  = false;
     }
 
     // Parameterized constructor
-    Person(int id, string fn, string ln, string email, string phone) {
-        this->id = id;
+    Person(int id, string fn, string ln, string email, string password) {
+        this->id        = id;
         this->firstName = fn;
-        this->lastName = ln;
-        this->email = email;
-        this->phone = phone;
-        this->password = "1234";
+        this->lastName  = ln;
+        this->email     = email;
+        this->password  = password;
         this->isLoggedIn = false;
     }
 
-    // Destructor (virtual for polymorphism)
+    // Virtual destructor (needed for polymorphism)
     virtual ~Person() {
-        cout << "Person " << getFullName() << " destroyed.\n";
+        cout << "Personne " << getFullName() << " destroyed.\n";
     }
 
     // Getters
-    int getId() const { return id; }
-    string getFirstName() const { return firstName; }
-    string getLastName() const { return lastName; }
-    string getFullName() const { return firstName + " " + lastName; }
-    string getEmail() const { return email; }
-    string getPhone() const { return phone; }
-    bool getLoginStatus() const { return isLoggedIn; }
+    int    getId()          const { return id; }
+    string getFirstName()   const { return firstName; }
+    string getLastName()    const { return lastName; }
+    string getFullName()    const { return firstName + " " + lastName; }
+    string getEmail()       const { return email; }
+    bool   getLoginStatus() const { return isLoggedIn; }
 
-    // Setters with validation
+    // Setters
     void setFirstName(string fn) { firstName = fn; }
-    void setLastName(string ln) { lastName = ln; }
-    
+    void setLastName(string ln)  { lastName  = ln; }
+
     void setEmail(string e) {
         if (e.find('@') != string::npos) email = e;
-        else throw invalid_argument("Invalid email");
-    }
-    
-    void setPhone(string p) {
-        if (p.length() == 10 && p.substr(0, 2) == "06")
-            phone = p;
-        else
-            throw invalid_argument("Phone must start with 06 and be 10 digits");
+        else cout << "Email invalide : doit contenir '@'\n";
+        // ✅ FIX : removed throw, replaced with simple message
     }
 
-    // Pure virtual = ABSTRACTION (must override in child classes)
+    // Pure virtual = ABSTRACTION
     virtual void displayRole() = 0;
-    virtual void dashboard() = 0;
+    virtual void dashboard()   = 0;
 
-    // Common methods
+    // Login
     bool login(string em, string pwd) {
         if (em == email && pwd == password) {
             isLoggedIn = true;
-            cout << "Welcome back, " << getFullName() << "!\n";
+            cout << "Bienvenue, " << getFullName() << "!\n";
             return true;
         }
-        cout << "Wrong email or password!\n";
+        cout << "Email ou mot de passe incorrect !\n";
         return false;
     }
 
+    // Logout
     void logout() {
         isLoggedIn = false;
-        cout << "Logged out. Goodbye, " << firstName << "!\n";
+        cout << "\nDéconnecté. À bientôt, " << firstName << "!\n";
     }
 
     // Sign up
-    void signUp(string fn, string ln, string em, string ph, string pwd) {
+    void signUp(string fn, string ln, string em, string pwd) {
         firstName = fn;
-        lastName = ln;
-        email = em;
-        setPhone(ph);
-        password = pwd;
-        cout << "Account created for " << getFullName() << "!\n";
+        lastName  = ln;
+        email     = em;
+        password  = pwd;
+        cout << "Compte créé pour " << getFullName() << "!\n";
     }
 
-    // Friend function
+    // Friend function (FRIEND FUNCTION)
     friend ostream& operator<<(ostream& out, const Person& p) {
-        out << "Person #" << p.id << " | " << p.getFullName() 
-            << " | " << p.email << " | " << p.phone;
+        out << "Personne #" << p.id
+            << " | "      << p.getFullName()
+            << " | "      << p.email
+            << " | "      << (p.isLoggedIn ? "En ligne" : "Hors ligne");
         return out;
     }
 };
@@ -110,25 +102,29 @@ public:
 
 class Client : public Person {
 private:
-    string address;
-    vector<int> cart;
-    vector<int> quantities;
-    string promoCode;
-    float promoDiscount;
+    string       address;
+    string       phone;
+    vector<int>  cart;
+    vector<int>  quantities;
+    string       promoCode;
+    float        promoDiscount;
 
 public:
-    // Constructors
+    // Default constructor
     Client() : Person() {
-        address = "NULL";
-        promoCode = "";
+        address       = "NULL";
+        phone         = "0";
         promoDiscount = 0;
     }
 
-    Client(int id, string fn, string ln, string email, string phone, string address) 
-        : Person(id, fn, ln, email, phone) {
-        this->address = address;
-        this->promoCode = "";
+    // Parameterized constructor
+    // ✅ FIX : added password parameter + passed it to Person
+    Client(int id, string fn, string ln, string email, string pwd)
+        : Person(id, fn, ln, email, pwd) {
+        this->address       = "NULL";
+        this->phone         = "0";
         this->promoDiscount = 0;
+        // address and phone not asked at signup — asked at payment ✅
     }
 
     // Destructor
@@ -138,107 +134,178 @@ public:
 
     // Getters
     string getAddress() const { return address; }
+    string getPhone()   const { return phone; }
+
+    // Setters
     void setAddress(string a) { address = a; }
 
-    // Override pure virtual (POLYMORPHISM)
+    // ✅ FIX : removed the semicolon after if condition
+    void setPhone(string p) {
+        if (p.length() == 10 && (p.substr(0, 2) == "06" || p.substr(0, 2) == "07"))
+            phone = p;
+        else
+            cout << "Le téléphone doit commencer par 06 ou 07 et avoir 10 chiffres\n";
+    }
+
+    // POLYMORPHISM : override pure virtual methods
     void displayRole() override {
-        cout << "Role: CLIENT (Buyer)\n";
+        cout << "Rôle : CLIENT (Acheteur)\n";
     }
 
     void dashboard() override {
-        cout << "\n=== CLIENT DASHBOARD ===\n";
-        cout << "Welcome, " << getFullName() << "!\n";
-        cout << "1. Browse products\n";
-        cout << "2. Search products\n";
-        cout << "3. View cart\n";
-        cout << "4. My orders\n";
-        cout << "5. Logout\n";
-        cout << "========================\n";
+        cout << "\n=== TABLEAU DE BORD CLIENT ===\n";
+        cout << "Bienvenue, " << getFullName() << "!\n";
+        cout << "1. Ajouter des produits au panier\n";
+        cout << "2. Voir le panier\n";
+        cout << "3. Appliquer un code promo\n";
+        cout << "4. Supprimer un article du panier\n";
+        cout << "5. Payer\n";
+        cout << "6. Se déconnecter\n";
+        cout << "==============================\n";
     }
 
-    // Cart methods
+    // Add to cart
     void addToCart(int productId, int qty) {
-        if (!isLoggedIn) {
-            cout << "Please login first!\n";
-            return;
-        }
+        if (!isLoggedIn) { cout << "Veuillez vous connecter d'abord !\n"; return; }
         for (size_t i = 0; i < cart.size(); i++) {
             if (cart[i] == productId) {
                 quantities[i] += qty;
-                cout << "Updated quantity to " << quantities[i] << " for product #" << productId << "\n";
+                cout << "Quantité mise à jour : " << quantities[i]
+                     << " pour le produit #" << productId << "\n";
                 return;
             }
         }
         cart.push_back(productId);
         quantities.push_back(qty);
-        cout << "Added " << qty << "x product #" << productId << " to cart.\n";
+        cout << "Ajouté " << qty << "x produit #" << productId << " au panier.\n";
     }
 
+    // Remove from cart
     void removeFromCart(int productId) {
         for (size_t i = 0; i < cart.size(); i++) {
             if (cart[i] == productId) {
                 cart.erase(cart.begin() + i);
                 quantities.erase(quantities.begin() + i);
-                cout << "Product #" << productId << " removed from cart.\n";
+                cout << "Produit #" << productId << " retiré du panier.\n";
                 return;
             }
         }
-        cout << "Product #" << productId << " not found in cart!\n";
+        cout << "Produit #" << productId << " introuvable dans le panier !\n";
     }
 
-    void displayCart() {
-        cout << "\n--- YOUR CART ---\n";
-        if (cart.empty()) {
-            cout << "Cart is empty!\n";
-            return;
-        }
-        for (size_t i = 0; i < cart.size(); i++) {
-            cout << "Product #" << cart[i] << " | Qty: " << quantities[i] << "\n";
-        }
-        cout << "-----------------\n";
-    }
-
-    void applyPromoCode(string code, float discountPercent) {
-        promoCode = code;
+    // Apply promo code
+    void insererCodePromo(string code, float discountPercent) {
+        promoCode     = code;
         promoDiscount = discountPercent;
-        cout << "Promo '" << code << "' applied: " << discountPercent << "% off!\n";
+        cout << "Promo '" << code << "' appliquée : " << discountPercent << "% de réduction !\n";
     }
 
+    // Display cart
+    void displayCart() {
+        cout << "\n--- VOTRE PANIER ---\n";
+        if (cart.empty()) { cout << "Le panier est vide !\n\n"; return; }
+        for (size_t i = 0; i < cart.size(); i++) {
+            cout << "Produit #" << cart[i]
+                 << " | Qty: " << quantities[i] << "\n";
+        }
+        cout << "-----------------\n\n";
+    }
+
+    // ✅ NEW : Pay — asks address, phone THEN payment method
     void pay(float amount) {
-        if (!isLoggedIn) {
-            cout << "Please login first!\n";
+        if (!isLoggedIn) { cout << "Veuillez vous connecter d'abord !\n"; return; }
+        if (cart.empty()) { cout << "Le panier est vide !\n"; return; }
+
+        // Step 1 : calculate total with promo
+        float discount = amount * (promoDiscount / 100.0f);
+        float total    = amount - discount;
+
+        cout << "\n--- RÉSUMÉ DE LA COMMANDE ---\n";
+        displayCart();
+        cout << "Sous-total : " << amount << " MAD\n";
+        if (promoDiscount > 0)
+            cout << "Réduction : -" << discount << " MAD (" << promoCode << ")\n";
+        cout << "TOTAL    : " << total << " MAD\n";
+        cout << "-----------------------------\n";
+
+        // Step 2 : ask delivery address and phone
+        cout << "\n--- INFORMATIONS DE LIVRAISON ---\n";
+        cout << "Entrez votre adresse : ";
+        cin.ignore();
+        getline(cin, address);
+
+        cout << "Entrez votre numéro de téléphone : ";
+        string ph;
+        getline(cin, ph);
+        setPhone(ph);
+
+        // Step 3 : choose payment method
+        cout << "\n--- MODE DE PAIEMENT ---\n";
+        cout << "1. Carte Bancaire\n";
+        cout << "2. PayPal\n";
+        cout << "Choix : ";
+        int payChoice;
+        cin >> payChoice;
+
+        if (payChoice == 1) {
+            // Bank card details
+            string cardNumber, cardHolder, expiry, cvv;
+            cout << "\n  Numéro de carte (16 chiffres) : ";
+            cin.ignore();
+            getline(cin, cardNumber);
+            cout << "  Nom du titulaire               : ";
+            getline(cin, cardHolder);
+            cout << "  Date d'expiration (MM/AA)      : ";
+            getline(cin, expiry);
+            cout << "  CVV                            : ";
+            getline(cin, cvv);
+            cout << "\n  Traitement du paiement...\n";
+            cout << "  Paiement par carte bancaire confirmé.\n";
+        }
+        else if (payChoice == 2) {
+            // PayPal details
+            string paypalEmail, paypalPwd;
+            cout << "\n  PayPal Email    : ";
+            cin.ignore();
+            getline(cin, paypalEmail);
+            cout << "  Mot de passe PayPal : ";
+            getline(cin, paypalPwd);
+            cout << "\n  Traitement du paiement...\n";
+            cout << "  Paiement via PayPal confirmé.\n";
+        }
+        else {
+            cout << "Choix invalide. Commande annulée.\n";
             return;
         }
-        if (cart.empty()) {
-            cout << "Cart is empty!\n";
-            return;
-        }
-        float discount = amount * (promoDiscount / 100);
-        float total = amount - discount;
-        cout << "Payment of $" << total << " processed!\n";
-        cout << "Shipping to: " << address << "\n";
+
+        // Step 4 : success message
+        cout << "\n========================================\n";
+        cout << "      MERCI POUR VOTRE COMMANDE !\n";
+        cout << "==============================================\n";
+        cout << "  Nom      : " << getFullName() << "\n";
+        cout << "  Email    : " << email << "\n";
+        cout << "  Téléphone : " << phone << "\n";
+        cout << "  Adresse  : " << address << "\n";
+        cout << "  Total    : " << total << " MAD\n";
+        cout << "  Confirmation envoyée à " << email << "\n";
+        cout << "==============================================\n\n";
+
+        // Step 5 : clear cart + reset promo → back to dashboard (still logged in ✅)
         cart.clear();
         quantities.clear();
-        promoCode = "";
+        promoCode     = "";
         promoDiscount = 0;
+        cout << "Redirection vers la page principale...\n";
     }
 
-    void cancelOrder() {
-        if (cart.empty()) {
-            cout << "No order to cancel!\n";
-            return;
-        }
+    // Cancel order
+    void annulerCommande() {
+        if (cart.empty()) { cout << "Aucune commande à annuler !\n"; return; }
         cart.clear();
         quantities.clear();
-        promoCode = "";
+        promoCode     = "";
         promoDiscount = 0;
-        cout << "Order cancelled. Cart emptied.\n";
-    }
-
-    void askAI(string question) {
-        cout << "\n[AI Assistant]\n";
-        cout << "Q: \"" << question << "\"\n";
-        cout << "A: Check our promotions in Sports & Fitness!\n\n";
+        cout << "Commande annulée. Le panier est maintenant vide.\n";
     }
 };
 
@@ -246,245 +313,217 @@ public:
 
 class Seller : public Person {
 private:
-    string shopName;
+    string      shopName;
     vector<int> myProducts;
-    float revenue;
+    float       revenue;
 
 public:
-    // Constructors
+    // Default constructor
     Seller() : Person() {
         shopName = "NULL";
-        revenue = 0;
+        revenue  = 0;
     }
 
-    Seller(int id, string fn, string ln, string email, string phone, string shopName) 
-        : Person(id, fn, ln, email, phone) {
+    // Parameterized constructor
+    // ✅ FIX : removed phone — Person doesn't have phone
+    Seller(int id, string fn, string ln, string email, string pwd, string shopName)
+        : Person(id, fn, ln, email, pwd) {
         this->shopName = shopName;
-        this->revenue = 0;
+        this->revenue  = 0;
     }
 
     // Destructor
     ~Seller() {
-        cout << "Seller " << getFullName() << " destroyed.\n";
+        cout << "Vendeur " << getFullName() << " destroyed.\n";
     }
 
-    // Getters
+    // Getters / Setters
     string getShopName() const { return shopName; }
-    float getRevenue() const { return revenue; }
-    void setShopName(string s) { shopName = s; }
+    float  getRevenue()  const { return revenue; }
+    void   setShopName(string s) { shopName = s; }
 
-    // Override pure virtual (POLYMORPHISM)
+    // POLYMORPHISM : override
     void displayRole() override {
-        cout << "Role: SELLER\n";
+        cout << "Rôle : VENDEUR\n";
     }
 
     void dashboard() override {
-        cout << "\n=== SELLER DASHBOARD ===\n";
-        cout << "Welcome, " << getFullName() << "!\n";
-        cout << "Shop: " << shopName << "\n";
-        cout << "1. Add product\n";
-        cout << "2. My products\n";
-        cout << "3. View sales\n";
-        cout << "4. Revenue: $" << revenue << "\n";
-        cout << "5. Logout\n";
-        cout << "========================\n";
+        cout << "\n=== TABLEAU DE BORD VENDEUR ===\n";
+        cout << "Bienvenue, " << getFullName() << "!\n";
+        cout << "Boutique : " << shopName << "\n";
+        cout << "1. Ajouter un produit\n";
+        cout << "2. Voir mes produits\n";
+        cout << "3. Chiffre d'affaires : " << revenue << " MAD\n";
+        cout << "4. Se déconnecter\n";
+        cout << "==============================\n";
     }
 
-    // Seller methods
+    // Vendeur methods
     void addProduct(int productId) {
-        if (!isLoggedIn) {
-            cout << "Please login first!\n";
-            return;
-        }
+        if (!isLoggedIn) { cout << "Veuillez vous connecter d'abord !\n"; return; }
         myProducts.push_back(productId);
-        cout << "Product #" << productId << " added to your shop.\n";
+        cout << "Produit #" << productId << " ajouté à votre boutique.\n";
     }
 
     void viewProducts() {
-        cout << "\n--- YOUR PRODUCTS ---\n";
-        if (myProducts.empty()) {
-            cout << "No products yet!\n";
-            return;
-        }
-        for (int pid : myProducts) {
-            cout << "Product #" << pid << "\n";
-        }
+        cout << "\n--- VOS PRODUITS ---\n";
+        if (myProducts.empty()) { cout << "Aucun produit pour l'instant !\n"; return; }
+        for (int pid : myProducts) cout << "Produit #" << pid << "\n";
+        cout << "-----------------------------\n";
     }
 
     void makeSale(float amount) {
         revenue += amount;
-        cout << "Sale made! Revenue now: $" << revenue << "\n";
+        cout << "Vente enregistrée ! Chiffre d'affaires : " << revenue << " MAD\n";
     }
 };
 
 // ==================== HELPER FUNCTIONS ====================
 
-// Sign up a new user
 Person* signUpUser() {
     cout << "\n========================================\n";
-    cout << "         CREATE NEW ACCOUNT\n";
-    cout << "========================================\n";
+    cout << "         CRÉER VOTRE COMPTE\n";
+    cout << "==============================================\n";
 
     int roleChoice;
-    cout << "Choose your role:\n";
-    cout << "1. Client (Buyer)\n";
-    cout << "2. Seller\n";
-    cout << "Choice: ";
+    cout << "Choisissez votre rôle :\n";
+    cout << "1. Client (Acheteur)\n";
+    cout << "2. Vendeur\n";
+    cout << "Choix : ";
     cin >> roleChoice;
 
-    string fn, ln, em, ph, pwd;
+    string fn, ln, em, pwd;
+    cout << "\nPrénom     : "; cin >> fn;
+    cout << "Nom        : "; cin >> ln;
+    cout << "Email      : "; cin >> em;
+    cout << "Mot de passe : "; cin >> pwd;
 
-    cout << "\n--- Enter Your Details ---\n";
-    cout << "First Name: ";
-    cin >> fn;
-    cout << "Last Name: ";
-    cin >> ln;
-    cout << "Email: ";
-    cin >> em;
-    cout << "Phone (starts with 06, 10 digits): ";
-    cin >> ph;
-    cout << "Password: ";
-    cin >> pwd;
-
-    static int nextId = 100; // Simple ID generator
+    static int nextId = 100;
 
     if (roleChoice == 1) {
-        string address;
-        cout << "Address: ";
-        cin.ignore();
-        getline(cin, address);
-        Client* client = new Client(nextId++, fn, ln, em, ph, address);
-        client->signUp(fn, ln, em, ph, pwd); // Set password properly
-        cout << "\nClient account created successfully!\n";
+        Client* client = new Client(nextId++, fn, ln, em, pwd);
+        client->signUp(fn, ln, em, pwd);   // prototype — kept as requested
+        cout << "\nCompte client créé avec succès !\n";
         return client;
-    } 
+    }
     else if (roleChoice == 2) {
         string shop;
-        cout << "Shop Name: ";
+        cout << "Nom de la boutique : ";
         cin.ignore();
         getline(cin, shop);
-        Seller* seller = new Seller(nextId++, fn, ln, em, ph, shop);
-        seller->signUp(fn, ln, em, ph, pwd); // Set password properly
-        cout << "\nSeller account created successfully!\n";
+        Seller* seller = new Seller(nextId++, fn, ln, em, pwd, shop);
+        seller->signUp(fn, ln, em, pwd);   // prototype — kept as requested
+        cout << "\nCompte vendeur créé avec succès !\n";
         return seller;
-    } 
+    }
     else {
-        cout << "Invalid role choice!\n";
+        cout << "Choix de rôle invalide !\n";
         return nullptr;
     }
-}
-
-// Log in an existing user
-Person* loginUser(Person* user) {
-    if (user == nullptr) {
-        cout << "\nNo account found! Please sign up first.\n";
-        return nullptr;
-    }
-
-    cout << "\n========================================\n";
-    cout << "              LOGIN\n";
-    cout << "========================================\n";
-
-    string em, pwd;
-    cout << "Email: ";
-    cin >> em;
-    cout << "Password: ";
-    cin >> pwd;
-
-    if (user->login(em, pwd)) {
-        return user;
-    }
-    return nullptr;
 }
 
 // ==================== MAIN ====================
 
 int main() {
-    cout << "========================================\n";
-    cout << "     E-COMMERCE PLATFORM\n";
-    cout << "========================================\n\n";
+    cout << "==============================================\n";
+    cout << "       BIENVENUE SUR NOTRE E-SHOP\n";
+    cout << "==============================================\n\n";
 
     Person* user = nullptr;
-    int choice;
 
-    // STEP 1: Login or Sign Up
-    cout << "Welcome! What would you like to do?\n";
-    cout << "1. Log In (existing account)\n";
-    cout << "2. Sign Up (create new account)\n";
-    cout << "Choice: ";
-    cin >> choice;
+    // Step 1 : sign up
+    user = signUpUser();
+    if (!user) { cout << "Au revoir !\n"; return 0; }
 
-    if (choice == 1) {
-        // Try to login - but need an account first
-        cout << "\nYou need an account to log in. Please sign up first.\n";
-        user = signUpUser();
-        if (user) {
-            // Auto-login after signup or ask to login
-            cout << "\nPlease log in with your new credentials:\n";
-            user = loginUser(user);
-        }
-    } 
-    else if (choice == 2) {
-        // Sign up
-        user = signUpUser();
-        if (user) {
-            // After signup, ask them to log in
-            cout << "\nAccount created! Please log in to continue:\n";
-            user = loginUser(user);
-        }
-    } 
-    else {
-        cout << "Invalid choice!\n";
-        return 1;
+    // ✅ FIX : login step added — user was never logged in before
+    cout << "\n--- Veuillez vous connecter ---\n";
+    string em, pwd;
+    cout << "Email        : "; cin >> em;
+    cout << "Mot de passe : "; cin >> pwd;
+
+    if (!user->login(em, pwd)) {
+        cout << "Connexion échouée. Au revoir !\n";
+        delete user;
+        return 0;
     }
 
-    // STEP 2: If logged in, start the platform
-    if (user && user->getLoginStatus()) {
-        cout << "\n========================================\n";
-        cout << "         WELCOME TO THE PLATFORM\n";
-        cout << "========================================\n";
+    // Step 2 : show info + role
+    cout << "\n" << *user << "\n";  // FRIEND FUNCTION : operator<<
+    user->displayRole();             // POLYMORPHISM
 
-        // POLYMORPHISM: same call, different behavior
-        cout << "\n" << *user << "\n";
-        user->displayRole();
-        user->dashboard();
+    // Step 3 : main loop — stays until logout (user stays logged in)
+    bool running = true;
+    while (running) {
 
-        // Dynamic cast to access specific methods
+        user->dashboard();   // POLYMORPHISM : different per role
+
         if (Client* client = dynamic_cast<Client*>(user)) {
-            cout << "\n--- CLIENT ACTIONS ---\n";
-            client->addToCart(101, 2);
-            client->addToCart(102, 1);
-            client->displayCart();
-            client->applyPromoCode("SALE20", 20);
-            client->pay(150.0);
+            int choice;
+            cout << "Votre choix : ";
+            cin >> choice;
+
+            switch (choice) {
+                case 1:
+                    client->addToCart(101, 2);
+                    client->addToCart(102, 1);
+                    break;
+                case 2:
+                    client->displayCart();
+                    break;
+                case 3: {
+                    string code; float disc;
+                    cout << "Code promo     : "; cin >> code;
+                    cout << "Réduction (%%) : "; cin >> disc;
+                    client->insererCodePromo(code, disc);
+                    break;
+                }
+                case 4: {
+                    int pid;
+                    cout << "ID du produit à supprimer : "; cin >> pid;
+                    client->removeFromCart(pid);
+                    break;
+                }
+                case 5:
+                    // asks address + phone + payment → success → back here
+                    client->pay(150.0f);
+                    break;
+                case 6:
+                    user->logout();
+                    running = false;
+                    break;
+                default:
+                    cout << "Choix invalide !\n";
+            }
         }
         else if (Seller* seller = dynamic_cast<Seller*>(user)) {
-            cout << "\n--- SELLER ACTIONS ---\n";
-            seller->addProduct(201);
-            seller->addProduct(202);
-            seller->viewProducts();
-            seller->makeSale(99.99);
-        }
+            int choice;
+            cout << "Votre choix : ";
+            cin >> choice;
 
-        // Logout and cleanup
-        user->logout();
-    } 
-    else {
-        cout << "\nLogin failed or cancelled. Goodbye!\n";
+            switch (choice) {
+                case 1: {
+                    int pid;
+                    cout << "ID du produit : "; cin >> pid;
+                    seller->addProduct(pid);
+                    break;
+                }
+                case 2: seller->viewProducts(); break;
+                case 3: cout << "Chiffre d'affaires : " << seller->getRevenue() << " MAD\n"; break;
+                case 4:
+                    user->logout();
+                    running = false;
+                    break;
+                default:
+                    cout << "Choix invalide !\n";
+            }
+        }
     }
 
     delete user;
 
     cout << "\n========================================\n";
-    cout << "     GOODBYE!\n";
-    cout << "========================================\n";
-
-
-    //Ajouter votre class Ici Les filles !! : 
+    cout << "              AU REVOIR !\n";
+    cout << "==============================================\n";
 
     return 0;
-<<<<<<< HEAD
 }
-=======
-} 
->>>>>>> 184010501e008ef959fa28e55f8a5e5bccfa3c30
