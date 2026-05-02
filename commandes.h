@@ -1,0 +1,53 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+enum EtatCommande { //enum remplace des chiffres incompréhensibles par des mots clairs.
+    EN_ATTENTE,
+    CONFIRMEE,
+    EN_LIVRAISON,
+    LIVREE,
+    ANNULEE
+};
+
+class Commande {
+private:
+    // ===== ATTRIBUTS =====
+    int          id_commande;
+    string       date_commande;
+    EtatCommande etat;
+    Client*      client;  // pointeur vers le client qui a commandé
+    Produit**    produits;        // tableau dynamique ex: [*iPhone, *TV, *PC],pointeur vers tableau de pointeurs
+    int*         quantites;  // chaque quantites[i] correspond à produits[i]
+
+    int          nb_produits;    
+    Paiement*    paiement;
+    string       adresse_livraison;
+    double       frais_livraison;
+
+public:
+    // ===== CONSTRUCTEUR / DESTRUCTEUR =====
+    Commande(int id, Client* c, string date,string adresse, int nb);
+    ~Commande();
+
+    // ===== METHODES =====
+    void   ajouterProduit(Produit* p, int quantite);
+    void   supprimerProduit(int id_produit);
+    double calculerTotal();
+    double calculerTotalAvecLivraison();
+    void   changerEtat(EtatCommande nouvelEtat);
+    void   afficherCommande();
+    bool   estVide();
+
+    // ===== GETTERS =====
+    int          getId();
+    string       getDate();    EtatCommande getEtat();
+    int          getNbProduits();
+    double       getFraisLivraison();
+    string       getAdresse();
+
+    // ===== SETTERS =====
+    void setPaiement(Paiement* p);
+    void setAdresse(string adresse);
+    void setFraisLivraison(double f);
+};
