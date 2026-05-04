@@ -3,10 +3,7 @@
 using namespace std;
 
 enum EtatCommande { //enum remplace des chiffres incompréhensibles par des mots clairs.
-    EN_ATTENTE,
     CONFIRMEE,
-    EN_LIVRAISON,
-    LIVREE,
     ANNULEE
 };
 
