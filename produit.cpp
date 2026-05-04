@@ -1,9 +1,4 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <iomanip>
-#include <stdexcept>
-using namespace std;
+#include"produit.h"
 
 
 // ============================================================
@@ -122,22 +117,9 @@ string statutToString(Statut s) {
 
 // ============================================================
 //  CLASSE ABSTRAITE : Produit
-// ============================================================
-class Produit {
-protected:
-    int id;
-    string nom;
-    double prix;
-    int    stock;
-    double note;        // 0.0 à 5.0
-    string categorie;
-    Statut statut;
-
-public:
-    // ── Constructeur ───────────────────────────────────────
-    Produit(int id, const string& nom, double prix,
-            int stock, const string& categorie,
-            double note = 0.0)
+// ==========================================================Produit(int id, const string& nom, double prix,
+        Produit::Produit(int stock, const string& categorie,
+            double note )
         : id(id), nom(nom), prix(prix), stock(stock),
           categorie(categorie), note(note),
           statut(stock > 0 ? Statut::DISPONIBLE
@@ -152,24 +134,24 @@ public:
     }
 
     // Destructeur virtuel — indispensable en hiérarchie POO
-    virtual ~Produit() {}
+    Produit::~Produit() {}
 
     // ── Getters ────────────────────────────────────────────
-    int    getId()        const { return id; }
-    string getNom()       const { return nom; }
-    double getPrix()      const { return prix; }
-    int    getStock()     const { return stock; }
-    double getNote()      const { return note; }
-    string getCategorie() const { return categorie; }
-    Statut getStatut()    const { return statut; }
+    int    Produit::getId()        const { return id; }
+    string  Produit::getNom()       const { return nom; }
+    double  Produit::getPrix()      const { return prix; }
+    int     Produit::getStock()     const { return stock; }
+    double Produit::getNote()      const { return note; }
+    string Produit::getCategorie() const { return categorie; }
+    Statut Produit::getStatut()    const { return statut; }
 
     // ── Setters avec validation ────────────────────────────
-    void setPrix(double p) {
+    void Produit::setPrix(double p) {
         if (p < 0) throw invalid_argument("Prix négatif interdit");
         prix = p;
     }
 
-    void setStock(int s) {
+    void Produit::setStock(int s) {
         if (s < 0) throw invalid_argument("Stock négatif interdit");
         stock = s;
         // Met à jour le statut automatiquement
@@ -179,13 +161,13 @@ public:
             statut = Statut::DISPONIBLE;
     }
 
-    void setNote(double n) {
+    void Produit::setNote(double n) {
         if (n < 0 || n > 5)
             throw invalid_argument("Note hors intervalle [0,5]");
         note = n;
     }
 
-    void archiver() {
+    void Produit::archiver() {
         statut = Statut::ARCHIVE;
         stock  = 0;
     }
@@ -193,7 +175,7 @@ public:
     // ── Méthodes concrètes ─────────────────────────────────
 
     // Affichage complet (appelle afficherDetails() polymorphe)
-    void afficher() const {
+    void Produit::afficher() const {
         cout << fixed << setprecision(2);
         cout << "┌────────────────────────────────────\n"
              << "│ [" << id << "] " << nom
@@ -209,12 +191,12 @@ public:
     }
 
     // Vérifie la disponibilité
-    bool estDisponible() const {
+    bool Produit::estDisponible() const {
         return statut == Statut::DISPONIBLE && stock > 0;
     }
 
     // Tente d'acheter une quantité — décrémente le stock
-    bool acheter(int quantite = 1) {
+    bool Produit::acheter(int quantite = 1) {
         if (quantite <= 0)
             throw invalid_argument("Quantité doit être > 0");
         if (statut == Statut::ARCHIVE)
@@ -227,7 +209,7 @@ public:
     }
 
     // Réapprovisionne le stock
-    void reapprovisionner(int quantite) {
+    void Produit::reapprovisionner(int quantite) {
         if (quantite <= 0)
             throw invalid_argument("Quantité de réappro doit être > 0");
         stock += quantite;
@@ -236,17 +218,15 @@ public:
     }
 
     // Représentation courte en string
-    string toString() const {
+      string Produit:: toString() const {
         return "[" + to_string(id) + "] " + nom +
                " — " + to_string((int)prix) + " MAD";
     }
 
-    // ── Méthodes virtuelles pures (obligatoires en sous-classe) ──
-    virtual double appliquerRemise(double pourcentage) = 0;
-    virtual void   afficherDetails() const = 0;
+  
 
     // ── Surcharge opérateurs ──────────────────────────────
-    friend ostream& operator<<(ostream& os, const Produit& p) {
+     ostream& operator<<(ostream& os, const Produit& p) {
         os << fixed << setprecision(2)
            << "[" << p.id << "] " << p.nom
            << " | " << p.prix << " MAD"
@@ -255,14 +235,13 @@ public:
         return os;
     }
 
-    bool operator==(const Produit& autre) const {
+    bool Produit::operator==(const Produit& autre) const {
         return id == autre.id;
     }
 
-    bool operator<(const Produit& autre) const {
+    bool Produit::operator<(const Produit& autre) const {
         return prix < autre.prix;
     }
-};
 
 
 // ============================================================
@@ -271,222 +250,7 @@ public:
 //                 couleur via enum Couleur (12 choix)
 //                 + choix interactif en console
 // ============================================================
-class Vetement : public Produit {
-protected:
-    Taille taille;           // enum : XS S M L XL XXL
-    Couleur couleur;         // enum : Rouge Bleu Noir…
-    string matiere;          // coton, polyester, laine…
-    string marque;
-    bool   estNeuf;
-    vector<Taille>  taillesDisponibles;  // tailles en stock
-    vector<Couleur> couleursDisponibles; // couleurs disponibles
-
-public:
-    // ── Constructeur principal ─────────────────────────────
-    Vetement(int id, const string& nom, double prix, int stock,
-             Taille taille, Couleur couleur,
-             const string& matiere, const string& marque,
-             bool estNeuf = true)
-        : Produit(id, nom, prix, stock, "Vêtement"),
-          taille(taille), couleur(couleur),
-          matiere(matiere), marque(marque), estNeuf(estNeuf)
-    {
-        // Par défaut : toutes les tailles et couleurs disponibles
-        taillesDisponibles  = { Taille::XS, Taille::S, Taille::M,
-                                Taille::L,  Taille::XL, Taille::XXL };
-        couleursDisponibles = { Couleur::ROUGE, Couleur::BLEU,
-                                Couleur::VERT,  Couleur::NOIR,
-                                Couleur::BLANC, Couleur::GRIS,
-                                Couleur::JAUNE, Couleur::ROSE,
-                                Couleur::ORANGE,Couleur::VIOLET,
-                                Couleur::MARRON,Couleur::BEIGE };
-    }
-
-    // ── Constructeur avec listes personnalisées ────────────
-    Vetement(int id, const string& nom, double prix, int stock,
-             Taille taille, Couleur couleur,
-             const string& matiere, const string& marque,
-             const vector<Taille>&  tailles,
-             const vector<Couleur>& couleurs,
-             bool estNeuf = true)
-        : Produit(id, nom, prix, stock, "Vêtement"),
-          taille(taille), couleur(couleur),
-          matiere(matiere), marque(marque), estNeuf(estNeuf),
-          taillesDisponibles(tailles),
-          couleursDisponibles(couleurs)
-    {}
-
-    virtual ~Vetement() {}
-
-    // ── Méthodes virtuelles ────────────────────────────────
-    double appliquerRemise(double pourcentage) override {
-        if (pourcentage < 0 || pourcentage > 100)
-            throw invalid_argument("Pourcentage invalide (0-100)");
-        prix *= (1.0 - pourcentage / 100.0);
-        return prix;
-    }
-
-    void afficherDetails() const override {
-        cout << "│ Taille  : " << tailleToString(taille)
-             << "   Couleur : " << couleurToString(couleur) << "\n"
-             << "│ Matière : " << matiere
-             << "   Marque  : " << marque << "\n"
-             << "│ État    : " << (estNeuf ? "Neuf" : "Occasion") << "\n";
-
-        // Tailles disponibles
-        cout << "│ Tailles dispo : ";
-        for (size_t i = 0; i < taillesDisponibles.size(); ++i) {
-            cout << tailleToString(taillesDisponibles[i]);
-            if (i < taillesDisponibles.size() - 1) cout << "  ";
-        }
-        cout << "\n";
-
-        // Couleurs disponibles
-        cout << "│ Couleurs dispo: ";
-        for (size_t i = 0; i < couleursDisponibles.size(); ++i) {
-            cout << couleurToString(couleursDisponibles[i]);
-            if (i < couleursDisponibles.size() - 1) cout << "  ";
-        }
-        cout << "\n";
-    }
-
-    // ── Sélection interactive de taille ───────────────────
-    // Affiche le menu et attend la saisie de l'utilisateur
-    bool choisirTaille() {
-        cout << "\n=== Choisir une taille pour : " << nom << " ===\n";
-        for (size_t i = 0; i < taillesDisponibles.size(); ++i) {
-            cout << "  [" << i + 1 << "] "
-                 << tailleToString(taillesDisponibles[i]) << "\n";
-        }
-        cout << "  Votre choix (1-"
-             << taillesDisponibles.size() << ") : ";
-
-        int choix;
-        cin >> choix;
-
-        if (choix < 1 || choix > (int)taillesDisponibles.size()) {
-            cout << "Choix invalide.\n";
-            return false;
-        }
-        taille = taillesDisponibles[choix - 1];
-        cout << "Taille sélectionnée : "
-             << tailleToString(taille) << "\n";
-        return true;
-    }
-
-    // ── Sélection interactive de couleur ──────────────────
-    bool choisirCouleur() {
-        cout << "\n=== Choisir une couleur pour : " << nom << " ===\n";
-        for (size_t i = 0; i < couleursDisponibles.size(); ++i) {
-            cout << "  [" << i + 1 << "] "
-                 << couleurToString(couleursDisponibles[i]) << "\n";
-        }
-        cout << "  Votre choix (1-"
-             << couleursDisponibles.size() << ") : ";
-
-        int choix;
-        cin >> choix;
-
-        if (choix < 1 || choix > (int)couleursDisponibles.size()) {
-            cout << "Choix invalide.\n";
-            return false;
-        }
-        couleur = couleursDisponibles[choix - 1];
-        cout << "Couleur sélectionnée : "
-             << couleurToString(couleur) << "\n";
-        return true;
-    }
-
-    // ── Vérifications ─────────────────────────────────────
-
-    // Vérifie si une taille est disponible
-    bool tailleDisponible(Taille t) const {
-        for (const auto& td : taillesDisponibles)
-            if (td == t) return true;
-        return false;
-    }
-
-    // Vérifie si une couleur est disponible
-    bool couleurDisponible(Couleur c) const {
-        for (const auto& cd : couleursDisponibles)
-            if (cd == c) return true;
-        return false;
-    }
-
-    // Ajoute une taille à la liste (si pas déjà présente)
-    void ajouterTaille(Taille t) {
-        if (!tailleDisponible(t))
-            taillesDisponibles.push_back(t);
-    }
-
-    // Retire une taille de la liste
-    void retirerTaille(Taille t) {
-        for (auto it = taillesDisponibles.begin();
-             it != taillesDisponibles.end(); ++it) {
-            if (*it == t) {
-                taillesDisponibles.erase(it);
-                return;
-            }
-        }
-    }
-
-    // Ajoute une couleur à la liste
-    void ajouterCouleur(Couleur c) {
-        if (!couleurDisponible(c))
-            couleursDisponibles.push_back(c);
-    }
-
-    // ── Setters ───────────────────────────────────────────
-    void setTaille(Taille t) {
-        if (!tailleDisponible(t))
-            throw invalid_argument("Taille non disponible : " +
-                                   tailleToString(t));
-        taille = t;
-    }
-
-    void setCouleur(Couleur c) {
-        if (!couleurDisponible(c))
-            throw invalid_argument("Couleur non disponible : " +
-                                   couleurToString(c));
-        couleur = c;
-    }
-
-    // Setter via string (pratique pour saisie console)
-    void setTailleStr(const string& s) {
-        setTaille(stringToTaille(s));
-    }
-
-    void setCouleurStr(const string& s) {
-        setCouleur(stringToCouleur(s));
-    }
-
-    // ── Getters ───────────────────────────────────────────
-    Taille  getTaille()     const { return taille; }
-    Couleur getCouleur()    const { return couleur; }
-    string  getTailleStr()  const { return tailleToString(taille); }
-    string  getCouleurStr() const { return couleurToString(couleur); }
-    string  getMatiere()    const { return matiere; }
-    string  getMarque()     const { return marque; }
-    bool    isNeuf()        const { return estNeuf; }
-
-    const vector<Taille>&  getTaillesDisponibles()  const {
-        return taillesDisponibles;
-    }
-    const vector<Couleur>& getCouleursDisponibles() const {
-        return couleursDisponibles;
-    }
-
-    // ── Surcharge opérateur << ────────────────────────────
-    friend ostream& operator<<(ostream& os, const Vetement& v) {
-        os << "[Vêtement] " << v.nom
-           << " | " << v.marque
-           << " | Taille: " << tailleToString(v.taille)
-           << " | Couleur: " << couleurToString(v.couleur)
-           << " | " << v.prix << " MAD";
-        return os;
-    }
-};
-
+   
 
 class Electronique : public Produit {
 protected:
@@ -560,10 +324,6 @@ public:
 class Ordinateur : public Electronique {
 private:
     string cpu;
-    string gpu;
-    int    stockageGo;
-    string typeStockage;   // SSD, HDD
-    string typeOrdi;       // laptop, desktop, tablette
 
 public:
     Ordinateur(int id, const string& nom, double prix, int stock,
@@ -695,45 +455,8 @@ int main() {
          << "╚══════════════════════════════════╝\n\n";
 
     // ── 1. Création avec enum directement ─────────────────
-    Vetement t1(1, "T-shirt Classic", 129.0, 50,
-                Taille::M, Couleur::BLANC,
-                "100% Coton", "Zara");
-    t1.afficher();
-    cout << t1 << "\n\n";
-
-    // ── 2. Création avec tailles/couleurs limitées ─────────
-    Vetement jeans(2, "Jean Slim Fit", 399.0, 30,
-                   Taille::L, Couleur::BLEU,
-                   "Denim", "Levi's",
-                   { Taille::S, Taille::M, Taille::L, Taille::XL },
-                   { Couleur::BLEU, Couleur::NOIR, Couleur::GRIS });
-    jeans.afficher();
-
-    // ── 3. Changer la taille via setter ───────────────────
-    cout << "Changement de taille M → XL\n";
-    try {
-        t1.setTaille(Taille::XL);
-        cout << "Nouvelle taille : " << t1.getTailleStr() << "\n";
-    } catch (const exception& e) {
-        cerr << "Erreur : " << e.what() << "\n";
-    }
-
-    // ── 4. Changer la couleur via string ──────────────────
-    cout << "Changement couleur → Noir\n";
-    try {
-        t1.setCouleurStr("Noir");
-        cout << "Nouvelle couleur : " << t1.getCouleurStr() << "\n";
-    } catch (const exception& e) {
-        cerr << "Erreur : " << e.what() << "\n";
-    }
-
-    // ── 5. Taille non disponible → exception ──────────────
-    cout << "\nTentative taille XXL sur jean (non dispo) :\n";
-    try {
-        jeans.setTaille(Taille::XXL);
-    } catch (const invalid_argument& e) {
-        cout << "Exception capturée : " << e.what() << "\n";
-    }
+   
+  
 
     // ── 6. Sélection interactive (décommenté en mode console)
     // t1.choisirTaille();
