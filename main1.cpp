@@ -10,23 +10,26 @@ int main() {
     cout << "Reduction Prime par defaut: 15%" << endl;
     
     // Création des clients
-    Client client1(1001, "Ahmed", "Casablanca", "0612345678");
-    Client client2(1002, "Sara", "Rabat", "0687654321");
-    Client client3(1003, "Karim", "Tanger", "0678912345");
+    Client c1(1001, "Ahmed","Bennani" "Casablanca", "0612345678");
+    Personne& personne1=c1;
+    Client c2(1002, "Sara","Amrani" "Rabat", "0687654321");
+    Personne& personne2=c2;
+    Client c3(1003, "Karim","Rachidi" "Tanger", "0678912345");
+    Personne& personne3=c3;
+
     
     // Création des articles
-    Article pc("PC Gamer", 6000.0, 1);
-    Article telephone("iPhone 15", 5000.0, 1);
-    Article souris("Souris Gaming", 200.0, 2);
-    Article clavier("Clavier Meca", 800.0, 1);
+    Electronique* pc=new Electronique("PC Gamer", 6000.0, 1);
+    Electronique* telephone=new Electronique("iPhone 15", 5000.0, 1);
+    Electronique* clavier=new Electronique("Clavier Meca", 800.0, 1);
     
     cout << "\n========================================" << endl;
     cout << "1. TEST PANIER STANDARD" << endl;
     cout << "========================================" << endl;
     
-    Panier p1(1, client1);
-    p1 += pc;
-    p1 += souris;
+    Panier p1(1, c1);
+    p1 += *pc;
+    p1 += *clavier;
     
     cout << p1;
     
@@ -44,15 +47,15 @@ int main() {
     cout << "2. TEST ELIGIBILITE PRIME" << endl;
     cout << "========================================" << endl;
     
-    Panier p2(2, client2);
-    p2 += pc;
-    p2 += telephone;
-    p2 += souris;
+    Panier p2(2, c2);
+    p2 += *pc;
+    p2 += *telephone;
+   
     
     cout << p2;
     
     if (PanierPrime::estEligible(p2)) {
-        cout << "\n✅ Client " << client2.getNom() << " est eligible pour Prime!" << endl;
+        cout << "\n Client " << c2.getNom() << " est eligible pour Prime!" << endl;
         cout << "   Total HT: " << p2.calculerTotalHT() << " DH" << endl;
         cout << "   Seuil requis: " << PanierPrime::getSeuil() << " DH" << endl;
         
@@ -61,7 +64,7 @@ int main() {
         cout << "Total HT apres reduction 15%: " << p2prime.calculerTotalHT() << " DH" << endl;
         cout << "Total TTC apres reduction: " << p2prime.calculerTotalTTC() << " DH" << endl;
     } else {
-        cout << "\n❌ Client " << client2.getNom() << " n'est pas eligible!" << endl;
+        cout << "\n Client " << c2.getNom() << " n'est pas eligible!" << endl;
         cout << "   Besoin de " << PanierPrime::getSeuil() - p2.calculerTotalHT() << " DH de plus" << endl;
     }
     
@@ -69,10 +72,10 @@ int main() {
     cout << "3. TEST PANIER PRIME" << endl;
     cout << "========================================" << endl;
     
-    PanierPrime p3(3, client3, 0.20);
-    p3 += pc;
-    p3 += telephone;
-    p3 += clavier;
+    PanierPrime p3(3, c3, 0.20);
+    p3 += *pc;
+    p3 += *telephone;
+    p3 += *clavier;
     
     cout << p3;
     
@@ -85,25 +88,25 @@ int main() {
     cout << "========================================" << endl;
     
     // Test operator==
-    Panier p4(4, client1);
-    p4 += pc;
-    p4 += souris;
+    Panier p4(4, c1);
+    p4 += *pc;
+    
     
     cout << "P1 Total TTC: " << p1.calculerTotalTTC() << " DH" << endl;
     cout << "P4 Total TTC: " << p4.calculerTotalTTC() << " DH" << endl;
     
     if (p1 == p4) {
-        cout << "✅ P1 et P4 ont le meme Total TTC!" << endl;
+        cout << " P1 et P4 ont le meme Total TTC!" << endl;
     } else {
-        cout << "❌ P1 et P4 ont des Totaux differents" << endl;
+        cout << " P1 et P4 ont des Totaux differents" << endl;
     }
     
     // Test operator[]
     try {
         cout << "\n--- Test operator[] ---" << endl;
-        cout << "Premier article du panier P1: " << p1[0].ref << endl;
-        p1[0].qte = 5;
-        cout << "Nouvelle quantite: " << p1[0].qte << endl;
+        cout << "Premier article du panier P1: " << p1[0].id << endl;
+        p1[0].stock = 5;
+        cout << "Nouvelle quantite: " << p1[0].stock << endl;
     } catch (const exception& e) {
         cerr << "Erreur: " << e.what() << endl;
     }
