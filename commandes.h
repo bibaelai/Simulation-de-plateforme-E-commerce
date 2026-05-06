@@ -1,6 +1,7 @@
 #ifndef COMMANDES_H
 #define COMMANDES_H
-#include"produit.h"
+#include "produit.h"
+#include "client.h"
 
 #include <iostream>
 #include <string>
@@ -52,3 +53,4 @@ public:
     void setAdresse(string adresse);
     void setFraisLivraison(double f);
 };
+#endif
