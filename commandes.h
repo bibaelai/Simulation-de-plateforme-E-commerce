@@ -1,3 +1,7 @@
+#ifndef COMMANDES_H
+#define COMMANDES_H
+
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -48,3 +52,4 @@ public:
     void setAdresse(string adresse);
     void setFraisLivraison(double f);
 };
+#endif
