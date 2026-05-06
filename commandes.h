@@ -2,6 +2,7 @@
 #define COMMANDES_H
 #include "produit.h"
 #include "client.h"
+#include "panier.h"
 
 #include <iostream>
 #include <string>
