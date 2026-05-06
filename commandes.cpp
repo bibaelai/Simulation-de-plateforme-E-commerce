@@ -45,14 +45,14 @@ void Commande::supprimerProduit(int id_produit) {
     }
     cout << "Produit non trouve." << endl;
 }
-double commande::calculerTotal() {
+double commande::calculerTotal() {  //le prix du produit selon sa quantité
     double total = 0;
     for (int i = 0; i < nb_produits; i++) {
         total += produits[i]->getPrix() * quantites[i];
     }
     return total;
 }
-double commande::calculerTotalAvecLivraison() {
+double commande::calculerTotalAvecLivraison() {   //le prix du produit selon sa quantité avec les frais de livraison 
     return calculerTotal() + frais_livraison;
 }
 void Commande::changerEtat(EtatCommande nouvelEtat) {
