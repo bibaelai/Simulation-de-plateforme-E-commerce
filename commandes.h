@@ -1,6 +1,6 @@
 #ifndef COMMANDES_H
 #define COMMANDES_H
-
+#include "produit"
 
 #include <iostream>
 #include <string>
