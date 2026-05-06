@@ -5,29 +5,27 @@ double Panier::tva = 0.20;
 double PanierPrime::SEUIL_ELIGIBILITE = 10000.0;
 
 // ========== Panier ==========
-Panier::Panier(int _idPanier, const Client& _client) 
-    : idPanier(_idPanier), client(_client) {}
+Panier::Panier(int _idPanier, Personne& _personne) 
+    : idPanier(_idPanier), personne(_personne) {}
 
 Panier::~Panier() {
     cout << "Destruction du Panier ID: " << idPanier << endl;
 }
 
-void Panier::ajouterArticle(const Article& a) {
+void Panier::ajouterProduit(const Produit& a) {
     for (auto& item : items) {
-        if (item.ref == a.ref) {
-            item.qte += a.qte;
-            sauvegarderAction("Ajout quantite: " + a.ref);
+        if (item.id == a.id) {
+            item.stock += a.stock;
             return;
         }
     }
     items.push_back(a);
-    sauvegarderAction("Ajout article: " + a.ref);
 }
 
 double Panier::calculerTotalHT() const {
     double total = 0;
     for (const auto& item : items) {
-        total += (item.prix * item.qte);
+        total += (item.prix * item.stock);
     }
     return total;
 }
@@ -36,18 +34,8 @@ double Panier::calculerTotalTTC() const {
     return calculerTotalHT() * (1 + tva);
 }
 
-void Panier::sauvegarderAction(string action) const {
-    ofstream fichier("historique_panier.txt", ios::app);
-    if (fichier.is_open()) {
-        fichier << "Panier " << idPanier << " - Client ID: " << client.getId()
-                << " - Action: " << action << endl;
-        fichier.close();
-    }
-}
-
 void Panier::viderPanier() {
     items.clear();
-    sauvegarderAction("Panier vide");
 }
 
 int Panier::getTaille() const {
@@ -55,9 +43,8 @@ int Panier::getTaille() const {
 }
 
 int Panier::getIdPanier() const { return idPanier; }
-Client Panier::getClient() const { return client; }
-int Panier::getIdClient() const { return client.getId(); }
-string Panier::getClientNom() const { return client.getNom(); }
+int Panier::getIdPersonne() const { return personne.getId(); }
+string Panier::getPersonneNom() const { return personne.getNom(); }
 
 double Panier::getTVA() { return tva; }
 void Panier::setTVA(double nouvelle) { tva = nouvelle; }
@@ -65,31 +52,26 @@ void Panier::setTVA(double nouvelle) { tva = nouvelle; }
 // ========== Opérateurs ==========
 Panier& Panier::operator++() {
     if (items.empty()) return *this;
-    for (auto& item : items) item.qte++;
-    sauvegarderAction("++ operateur");
+    for (auto& item : items) item.stock++;
     return *this;
 }
 
 Panier& Panier::operator--() {
     if (items.empty()) return *this;
-    for (auto& item : items) if (item.qte > 0) item.qte--;
-    items.erase(remove_if(items.begin(), items.end(),
-                 [](const Article& a) { return a.qte <= 0; }), items.end());
-    sauvegarderAction("-- operateur");
+    for (auto& item : items) if (item.qte > 0) item.stock--;
+    items.erase(remove_if(items.begin(), items.end(),[](const Produit& a) { return a.stock <= 0; }), items.end());
     return *this;
-}
-
-Panier& Panier::operator+=(const Article& a) {
-    ajouterArticle(a);
+}   
+Panier& Panier::operator+=(const Produit& a) {
+    ajouterProduit(a);
     return *this;
 }
 
 Panier& Panier::operator-=(string ref) {
     auto it = remove_if(items.begin(), items.end(),
-               [&ref](const Article& a) { return a.ref == ref; });
+               [&ref](const Produit& a) { return a.id == ref; });
     if (it != items.end()) {
         items.erase(it, items.end());
-        sauvegarderAction("Suppression: " + ref);
     }
     return *this;
 }
@@ -97,7 +79,7 @@ Panier& Panier::operator-=(string ref) {
 Panier& Panier::operator=(const Panier& source) {
     if (this != &source) {
         this->idPanier = source.idPanier;
-        this->client = source.client;
+        this->personne = source.personne;
         this->items = source.items;
     }
     return *this;
@@ -111,13 +93,13 @@ bool Panier::operator!=(const Panier& other) const {
     return !(*this == other);
 }
 
-Article& Panier::operator[](int index) {
+Produit& Panier::operator[](int index) {
     if (index < 0 || index >= (int)items.size())
         throw out_of_range("Index hors limites!");
     return items[index];
 }
 
-const Article& Panier::operator[](int index) const {
+const Produit& Panier::operator[](int index) const {
     if (index < 0 || index >= (int)items.size())
         throw out_of_range("Index hors limites!");
     return items[index];
@@ -130,7 +112,7 @@ Panier::operator double() const {
 ostream& operator<<(ostream& os, const Panier& p) {
     os << "\n========================================" << endl;
     os << "PANIER ID: [" << p.idPanier << "] | ";
-    p.client.afficher();
+    p.personne.afficherRole();
     os << endl;
     os << "----------------------------------------" << endl;
     
@@ -139,10 +121,10 @@ ostream& operator<<(ostream& os, const Panier& p) {
     } else {
         int i = 1;
         for (const auto& item : p.items) {
-            os << "  " << i++ << ". " << item.ref 
-               << " | " << fixed << setprecision(2) << item.prix 
-               << " DH | x" << item.qte 
-               << " = " << (item.prix * item.qte) << " DH" << endl;
+            os << "  " << i++ << ". " << item.id;
+               << " | " << fixed << setprecision(2) << item.prix;
+               << " DH | x" << item.stock;
+               << " = " << (item.prix * item.stock) << " DH" << endl;
         }
     }
     
@@ -154,8 +136,8 @@ ostream& operator<<(ostream& os, const Panier& p) {
 }
 
 // ========== PanierPrime ==========
-PanierPrime::PanierPrime(int _idPanier, const Client& _client, double _taux) 
-    : Panier(_idPanier, _client), tauxReduction(_taux) {
+PanierPrime::PanierPrime(int _idPanier, const Personne& _personne, double _taux) 
+    : Panier(_idPanier, _personne), tauxReduction(_taux) {
     if (tauxReduction < 0) tauxReduction = 0;
     if (tauxReduction > 0.5) tauxReduction = 0.5;
 }
@@ -181,7 +163,6 @@ double PanierPrime::getTauxReduction() const {
 void PanierPrime::setTauxReduction(double nouveauTaux) {
     if (nouveauTaux >= 0 && nouveauTaux <= 0.5) {
         tauxReduction = nouveauTaux;
-        sauvegarderAction("Taux reduction: " + to_string(nouveauTaux * 100) + "%");
     }
 }
 
