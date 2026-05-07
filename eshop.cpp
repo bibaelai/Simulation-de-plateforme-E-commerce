@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <windows.h>
 #include <stdexcept>
 #include <algorithm>
 using namespace std;
@@ -1593,8 +1594,29 @@ void menuClient(Client* client, Catalogue& catalogue) {
 
             // ── Browse all products ─────────────────────
             case 1:
-                catalogue.afficherTous();
-                break;
+               catalogue.afficherTous();
+            {
+                cout << "  Entrer l'ID d'un produit pour l'ajouter au panier (0 = retour) : ";
+                int pid; cin >> pid;
+                if (pid != 0) {
+                  Produit* p = catalogue.trouverParId(pid);
+                  if (p) {
+                  p->afficher();
+                  cout << "  Quantite : "; int qty; cin >> qty;
+                  string taille, couleur;
+                  if (Vetement* v = dynamic_cast<Vetement*>(p)) {
+                    v->choisirTaille();
+                    v->choisirCouleur();
+                    taille  = tailleToString(v->getTaille());
+                    couleur = couleurToString(v->getCouleur());
+                  }
+                  client->ajouterAuPanier(p, qty, taille, couleur);
+                 } else {
+                 cout << "  Produit introuvable.\n";
+                 }
+                }
+            }
+            break;
 
             // ── Search by keyword ───────────────────────
             case 2: {
@@ -1622,8 +1644,8 @@ void menuClient(Client* client, Catalogue& catalogue) {
                                 if (Vetement* v = dynamic_cast<Vetement*>(p)) {
                                     v->choisirTaille();
                                     v->choisirCouleur();
-                                    taille  = v->getTailleStr();
-                                    couleur = v->getCouleurStr();
+                                    taille  = tailleToString(v->getTaille());
+                                    couleur = couleurToString(v->getCouleur());
                                 }
                                 client->ajouterAuPanier(p, qty, taille, couleur);
                             }
@@ -1755,6 +1777,8 @@ void menuVendeur(Vendeur* vendeur) {
 //  MAIN
 // ============================================================
 int main() {
+    SetConsoleOutputCP(CP_UTF8);   // encodage UTF-8
+    SetConsoleCP(CP_UTF8);         // encodage entrée aussi
     cout << "╔══════════════════════════════════════╗\n"
          << "║     BIENVENUE SUR NOTRE E-SHOP       ║\n"
          << "╚══════════════════════════════════════╝\n\n";
