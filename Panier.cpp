@@ -5,17 +5,21 @@ double Panier::tva = 0.20;
 double PanierPrime::SEUIL_ELIGIBILITE = 10000.0;
 
 // ========== Panier ==========
+
+//________CONSTRUCTEUR_______
 Panier::Panier(int _idPanier, Personne& _personne) 
     : idPanier(_idPanier), personne(_personne) {}
 
+//________DESTRUCTEUR________
 Panier::~Panier() {
+    items.clear();
     cout << "Destruction du Panier ID: " << idPanier << endl;
 }
 
-void Panier::ajouterProduit(const Produit& a) {
-    for (auto& item : items) {
-        if (item.id == a.id) {
-            item.stock += a.stock;
+void Panier::ajouterProduit(Produit* a) {
+    for (auto* item : items) {
+        if (item->getId() == a->getId()) {
+            item->reapprovisionner(a->getStock()); 
             return;
         }
     }
@@ -24,8 +28,8 @@ void Panier::ajouterProduit(const Produit& a) {
 
 double Panier::calculerTotalHT() const {
     double total = 0;
-    for (const auto& item : items) {
-        total += (item.prix * item.stock);
+    for (const auto* item : items) {
+        total += (item->getPrix() * item->getStock());
     }
     return total;
 }
@@ -52,24 +56,31 @@ void Panier::setTVA(double nouvelle) { tva = nouvelle; }
 // ========== Opérateurs ==========
 Panier& Panier::operator++() {
     if (items.empty()) return *this;
-    for (auto& item : items) item.stock++;
+    for (auto* item : items) {
+        item->acheter(1); 
+    }
     return *this;
 }
 
 Panier& Panier::operator--() {
     if (items.empty()) return *this;
-    for (auto& item : items) if (item.qte > 0) item.stock--;
-    items.erase(remove_if(items.begin(), items.end(),[](const Produit& a) { return a.stock <= 0; }), items.end());
+    for (auto* item : items) {
+        if (item->getStock() > 0) {
+        }
+    }
+    items.erase(remove_if(items.begin(), items.end(), [](Produit* a) {
+        return a->getStock() <= 0; 
+    }), items.end());
     return *this;
-}   
-Panier& Panier::operator+=(const Produit& a) {
+}
+Panier& Panier::operator+=(Produit* a) {
     ajouterProduit(a);
     return *this;
 }
 
-Panier& Panier::operator-=(string ref) {
-    auto it = remove_if(items.begin(), items.end(),
-               [&ref](const Produit& a) { return a.id == ref; });
+Panier& Panier::operator-=(int ref) {
+    auto it = remove_if(items.begin(), items.end(), 
+    [&ref](const Produit* a) { return a->getId() == ref; });
     if (it != items.end()) {
         items.erase(it, items.end());
     }
@@ -93,13 +104,13 @@ bool Panier::operator!=(const Panier& other) const {
     return !(*this == other);
 }
 
-Produit& Panier::operator[](int index) {
+Produit* Panier::operator[](int index) {
     if (index < 0 || index >= (int)items.size())
         throw out_of_range("Index hors limites!");
     return items[index];
 }
 
-const Produit& Panier::operator[](int index) const {
+const Produit* Panier::operator[](int index) const {
     if (index < 0 || index >= (int)items.size())
         throw out_of_range("Index hors limites!");
     return items[index];
@@ -121,12 +132,12 @@ ostream& operator<<(ostream& os, const Panier& p) {
     } else {
         int i = 1;
         for (const auto& item : p.items) {
-            os << "  " << i++ << ". " << item.id;
-               << " | " << fixed << setprecision(2) << item.prix;
-               << " DH | x" << item.stock;
-               << " = " << (item.prix * item.stock) << " DH" << endl;
-        }
+            os << "  " << i++ << ". " << item->getId() << " | " 
+        << fixed << setprecision(2) << item->getPrix() << " DH" 
+        << " x" << item->getStock() 
+        << " = " << (item->getPrix() * item->getStock()) << " DH" << endl;
     }
+}
     
     os << "----------------------------------------" << endl;
     os << "Total HT : " << fixed << setprecision(2) << p.calculerTotalHT() << " DH" << endl;
@@ -136,18 +147,22 @@ ostream& operator<<(ostream& os, const Panier& p) {
 }
 
 // ========== PanierPrime ==========
-PanierPrime::PanierPrime(int _idPanier, const Personne& _personne, double _taux) 
-    : Panier(_idPanier, _personne), tauxReduction(_taux) {
-    if (tauxReduction < 0) tauxReduction = 0;
-    if (tauxReduction > 0.5) tauxReduction = 0.5;
-}
 
+PanierPrime::PanierPrime(int _idPanier, Personne& _personne, double _taux) 
+    : Panier(_idPanier, _personne) 
+{ 
+    if (_taux < 0) tauxReduction = 0;
+    else if (_taux > 0.5) tauxReduction = 0.5;
+    else tauxReduction = _taux;
+}
 PanierPrime::PanierPrime(const Panier& p, double _taux) 
-    : Panier(p), tauxReduction(_taux) {
-    if (tauxReduction < 0) tauxReduction = 0;
-    if (tauxReduction > 0.5) tauxReduction = 0.5;
-}
+    : Panier(p) 
+{
+    if (_taux < 0) tauxReduction = 0;
+    else if (_taux > 0.5) tauxReduction = 0.5;
+    else tauxReduction = _taux;
 
+}
 double PanierPrime::calculerTotalHT() const {
     return Panier::calculerTotalHT() * (1 - tauxReduction);
 }

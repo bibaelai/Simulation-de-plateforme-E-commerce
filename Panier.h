@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "produit.h"
 #include "personne.h"
+#include "vetement.h"
 
 using namespace std;
 
@@ -14,14 +15,14 @@ class Panier {
 protected:
     int idPanier;
     Personne& personne;
-    vector<Produit> items;
+    vector<Produit*> items;
     static double tva;
 
 public:
-    Panier(int _idPanier,  Personne& _personne);
+    Panier(int _idPanier, Personne& _personne);
     virtual ~Panier();
     
-    void ajouterProduit(const Produit& a);
+    void ajouterProduit(Produit* a);
     virtual double calculerTotalHT() const;
     virtual double calculerTotalTTC() const;
     void viderPanier();
@@ -34,15 +35,15 @@ public:
     
     Panier& operator++();
     Panier& operator--();
-    Panier& operator+=(const Produit& a);
-    Panier& operator-=(string ref);
+    Panier& operator+=(Produit* a);
+    Panier& operator-=(int ref);
     Panier& operator=(const Panier& source);
     
     bool operator==(const Panier& other) const;
     bool operator!=(const Panier& other) const;
     
-    Produit& operator[](int index);
-    const Produit& operator[](int index) const;
+    Produit* operator[](int index);
+    const Produit* operator[](int index) const;
     
     operator double() const;
     
@@ -58,7 +59,7 @@ private:
     static double SEUIL_ELIGIBILITE;
 
 public:
-    PanierPrime(int _idPanier, const Personne& _personne, double _taux = 0.15);
+    PanierPrime(int _idPanier,Personne& _personne, double _taux = 0.15);
     PanierPrime(const Panier& p, double _taux = 0.15);
     
     double calculerTotalHT() const override;
@@ -70,6 +71,6 @@ public:
     static bool estEligible(const Panier& p);
     static double getSeuil();
     static void setSeuil(double nouveauSeuil);
-}
+};
 
 #endif
