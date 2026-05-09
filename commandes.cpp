@@ -30,6 +30,7 @@ void Commande::ajouterProduit(Produit* p, int quantite) {
             return;
         }
     }
+    cout << "Erreur : panier plein." << endl;
 }
 void Commande::supprimerProduit(int id_produit) {
     for (int i = 0; i < nb_produits; i++) {
@@ -45,14 +46,14 @@ void Commande::supprimerProduit(int id_produit) {
     }
     cout << "Produit non trouve." << endl;
 }
-double commande::calculerTotal() {
+double commande::calculerTotal() {  //le prix du produit selon sa quantité
     double total = 0;
     for (int i = 0; i < nb_produits; i++) {
         total += produits[i]->getPrix() * quantites[i];
     }
     return total;
 }
-double commande::calculerTotalAvecLivraison() {
+double Commande::calculerTotalAvecLivraison() {   //le prix du produit selon sa quantité avec les frais de livraison 
     return calculerTotal() + frais_livraison;
 }
 void Commande::changerEtat(EtatCommande nouvelEtat) {
@@ -88,5 +89,5 @@ string       Commande::getAdresse()        { return adresse_livraison; }
 
     // ===== SETTERS =====
 void Commande::setPaiement(Paiement* p)    { paiement = p; }
-void commande::setAdresse(string adresse)  { adresse_livraison = adresse; }
+void Commande::setAdresse(string adresse)  { adresse_livraison = adresse; }
 void Commande::setFraisLivraison(double f) { frais_livraison = f; }

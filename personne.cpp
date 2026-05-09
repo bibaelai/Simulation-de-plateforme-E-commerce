@@ -410,7 +410,10 @@ int main() {
         return 0;
     }
 
+
+
     // Step 2 : show info + role
+
     cout << "\n" << *utilisateur << "\n";   // FRIEND FUNCTION : operator<<
     utilisateur->afficherRole();             // POLYMORPHISM
 
@@ -490,3 +493,4 @@ int main() {
 
     return 0;
 }
+
