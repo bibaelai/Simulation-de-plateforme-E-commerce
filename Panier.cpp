@@ -167,7 +167,7 @@ void PanierPrime::setTauxReduction(double nouveauTaux) {
 }
 
 bool PanierPrime::estEligible(const Panier& p) {
-    return p.calculerTotalHT() >= SEUIL_ELIGIBILITE;
+    return p.calculerTotalHT() >= SEUIL_ELIGIBILITE;      // TO REMOVE 
 }
 
 double PanierPrime::getSeuil() { return SEUIL_ELIGIBILITE; }
