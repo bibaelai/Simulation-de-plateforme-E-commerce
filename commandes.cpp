@@ -53,7 +53,15 @@ double commande::calculerTotal() {  //le prix du produit selon sa quantité
     }
     return total;
 }
+<<<<<<< HEAD
 double Commande::calculerTotalAvecLivraison() {   //le prix du produit selon sa quantité avec les frais de livraison 
+=======
+<<<<<<< HEAD
+double commande::calculerTotalAvecLivraison() {   //le prix du produit selon sa quantité avec les frais de livraison 
+=======
+double Commande::calculerTotalAvecLivraison() {   //le prix du produit selon sa quantité avec les frais de livraison 
+>>>>>>> 54252bd71ffd31c2f76dfb13ef8acd8086245ae0
+>>>>>>> main
     return calculerTotal() + frais_livraison;
 }
 void Commande::changerEtat(EtatCommande nouvelEtat) {
