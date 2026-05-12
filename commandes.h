@@ -1,6 +1,11 @@
 #ifndef COMMANDES_H
 #define COMMANDES_H
 #include "produit.h"
+<<<<<<< HEAD
+=======
+#include "client.h"
+#include "panier.h"
+>>>>>>> 54252bd71ffd31c2f76dfb13ef8acd8086245ae0
 
 #include <iostream>
 #include <string>
@@ -8,6 +13,10 @@ using namespace std;
 
 enum EtatCommande { //enum remplace des chiffres incompréhensibles par des mots clairs.
     CONFIRMEE,
+<<<<<<< HEAD
+=======
+    EN_ATTENTE,
+>>>>>>> 54252bd71ffd31c2f76dfb13ef8acd8086245ae0
     ANNULEE
 };
 

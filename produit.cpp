@@ -122,6 +122,49 @@ double Produit::getPrix() const {
 int Produit::getStock() const {
     return stock;
 }
+// Setters
+void Produit::setNom(const string& nouveauNom) {
+    if (nouveauNom.empty()) {
+        throw invalid_argument("Le nom ne peut pas etre vide");
+    }
+
+    nom = nouveauNom;
+}
+
+void Produit::setPrix(double nouveauPrix) {
+    if (nouveauPrix < 0) {
+        throw invalid_argument("Le prix ne peut pas etre negatif");
+    }
+
+    prix = nouveauPrix;
+}
+
+void Produit::setStock(int nouveauStock) {
+    if (nouveauStock < 0) {
+        throw invalid_argument("Le stock ne peut pas etre negatif");
+    }
+
+    stock = nouveauStock;
+
+    if (stock > 0) {
+        statut = Statut::DISPONIBLE;
+    } else {
+        statut = Statut::RUPTURE_STOCK;
+    }
+}
+
+void Produit::setCategorie(const string& nouvelleCategorie) {
+    if (nouvelleCategorie.empty()) {
+        throw invalid_argument("La categorie ne peut pas etre vide");
+    }
+
+    categorie = nouvelleCategorie;
+}
+
+void Produit::setStatut(Statut nouveauStatut) {
+    statut = nouveauStatut;
+}
+
 
 // Affichage général
 void Produit::afficher() const {

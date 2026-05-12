@@ -50,7 +50,13 @@ public:
     int getId() const;
     string getNom() const;
     double getPrix() const;
-    int getStock() const;
+    int getStock() const;// Setters
+void setNom(const string& nom);
+void setPrix(double prix);
+void setStock(int stock);
+void setCategorie(const string& categorie);
+void setStatut(Statut statut);
+
 
     // Méthodes
     void afficher() const;
