@@ -13,7 +13,7 @@ USE eshop;
 -- ============================================================
 --  TABLE : personnes  (base class Personne)
 -- ============================================================
-CREATE TABLE personnes (
+CREATE TABLE IF NOT EXISTS personnes (
     id            INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     prenom        VARCHAR(50)  NOT NULL,
     nom           VARCHAR(50)  NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE personnes (
 -- ============================================================
 --  TABLE : clients  (extends personnes)
 -- ============================================================
-CREATE TABLE clients (
+CREATE TABLE IF NOT EXISTS  clients (
     personne_id   INT UNSIGNED NOT NULL PRIMARY KEY,
     adresse       TEXT,
     est_prime     TINYINT(1)   NOT NULL DEFAULT 0,
@@ -46,7 +46,7 @@ CREATE TABLE clients (
 -- ============================================================
 --  TABLE : vendeurs  (extends personnes)
 -- ============================================================
-CREATE TABLE vendeurs (
+CREATE TABLE IF NOT EXISTS vendeurs (
     personne_id      INT UNSIGNED NOT NULL PRIMARY KEY,
     nom_boutique     VARCHAR(100) NOT NULL,
     chiffre_affaires DECIMAL(12,2) NOT NULL DEFAULT 0.00,
@@ -58,7 +58,7 @@ CREATE TABLE vendeurs (
 -- ============================================================
 --  TABLE : produits  (base class Produit — abstract fields)
 -- ============================================================
-CREATE TABLE produits (
+CREATE TABLE IF NOT EXISTS produits (
     id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom            VARCHAR(150) NOT NULL,
     prix           DECIMAL(10,2) NOT NULL CHECK (prix >= 0),
@@ -86,7 +86,7 @@ CREATE TABLE produits (
 -- ============================================================
 --  TABLE : vetements  (extends produits)
 -- ============================================================
-CREATE TABLE vetements (
+CREATE TABLE IF NOT EXISTS vetements (
     produit_id  INT UNSIGNED NOT NULL PRIMARY KEY,
     taille      ENUM('XS','S','M','L','XL','XXL') NOT NULL,
     couleur     ENUM('Rouge','Bleu','Vert','Noir','Blanc','Gris',
@@ -103,7 +103,7 @@ CREATE TABLE vetements (
 -- ============================================================
 --  TABLE : electroniques  (extends produits)
 -- ============================================================
-CREATE TABLE electroniques (
+CREATE TABLE IF NOT EXISTS electroniques (
     produit_id      INT UNSIGNED NOT NULL PRIMARY KEY,
     marque          VARCHAR(100) NOT NULL,
     garantie_mois   INT          NOT NULL DEFAULT 12,
@@ -132,7 +132,7 @@ CREATE TABLE electroniques (
 -- ============================================================
 --  TABLE : alimentations  (extends produits)
 -- ============================================================
-CREATE TABLE alimentations (
+CREATE TABLE IF NOT EXISTS alimentations (
     produit_id        INT UNSIGNED NOT NULL PRIMARY KEY,
     date_expiration   DATE        NOT NULL,
     poids_kg          DECIMAL(6,3) NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE alimentations (
 -- ============================================================
 --  TABLE : livres  (extends produits)
 -- ============================================================
-CREATE TABLE livres (
+CREATE TABLE IF NOT EXISTS livres (
     produit_id         INT UNSIGNED NOT NULL PRIMARY KEY,
     auteur             VARCHAR(150) NOT NULL,
     isbn               VARCHAR(20)  NOT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE livres (
 -- ============================================================
 --  TABLE : sport_fitness  (extends produits)
 -- ============================================================
-CREATE TABLE sport_fitness (
+CREATE TABLE IF NOT EXISTS sport_fitness (
     produit_id         INT UNSIGNED NOT NULL PRIMARY KEY,
     sport              VARCHAR(80)  NOT NULL,
     marque             VARCHAR(100) NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE sport_fitness (
 -- ============================================================
 --  TABLE : maison_decor  (extends produits)
 -- ============================================================
-CREATE TABLE maison_decor (
+CREATE TABLE IF NOT EXISTS maison_decor (
     produit_id  INT UNSIGNED NOT NULL PRIMARY KEY,
     piece       VARCHAR(80),
     style       VARCHAR(80),
@@ -195,7 +195,7 @@ CREATE TABLE maison_decor (
 -- ============================================================
 --  TABLE : tickets  (extends produits)
 -- ============================================================
-CREATE TABLE tickets (
+CREATE TABLE IF NOT EXISTS tickets (
     produit_id       INT UNSIGNED NOT NULL PRIMARY KEY,
     evenement        VARCHAR(150) NOT NULL,
     lieu             VARCHAR(150) NOT NULL,
@@ -210,7 +210,7 @@ CREATE TABLE tickets (
 -- ============================================================
 --  TABLE : commentaires  (Commentaire struct)
 -- ============================================================
-CREATE TABLE commentaires (
+CREATE TABLE IF NOT EXISTS commentaires (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     produit_id  INT UNSIGNED NOT NULL,
     auteur      VARCHAR(100) NOT NULL,
@@ -225,7 +225,7 @@ CREATE TABLE commentaires (
 -- ============================================================
 --  TABLE : commandes  (Commande class)
 -- ============================================================
-CREATE TABLE commandes (
+CREATE TABLE IF NOT EXISTS commandes (
     id               INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     client_id        INT UNSIGNED NOT NULL,
     date_commande    DATE         NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE commandes (
 -- ============================================================
 --  TABLE : lignes_commande  (ArticlePanier → order line)
 -- ============================================================
-CREATE TABLE lignes_commande (
+CREATE TABLE IF NOT EXISTS lignes_commande (
     id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     commande_id    INT UNSIGNED  NOT NULL,
     produit_id     INT UNSIGNED  NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE lignes_commande (
 -- ============================================================
 --  TABLE : paiements  (Paiement class)
 -- ============================================================
-CREATE TABLE paiements (
+CREATE TABLE IF NOT EXISTS paiements (
     id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     commande_id  INT UNSIGNED  NOT NULL UNIQUE,
     mode         ENUM('Carte','PayPal') NOT NULL,
@@ -285,7 +285,7 @@ CREATE TABLE paiements (
 -- ============================================================
 --  TABLE : paniers  (Panier class — persisted cart)
 -- ============================================================
-CREATE TABLE paniers (
+CREATE TABLE IF NOT EXISTS paniers (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     client_id     INT UNSIGNED  NOT NULL UNIQUE,
     code_promo    VARCHAR(30)   DEFAULT NULL,
@@ -301,7 +301,7 @@ CREATE TABLE paniers (
 -- ============================================================
 --  TABLE : articles_panier  (ArticlePanier struct)
 -- ============================================================
-CREATE TABLE articles_panier (
+CREATE TABLE IF NOT EXISTS articles_panier (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     panier_id       INT UNSIGNED NOT NULL,
     produit_id      INT UNSIGNED NOT NULL,
@@ -511,8 +511,24 @@ VALUES
 
 INSERT INTO vetements (produit_id, taille, couleur, matiere, marque, est_neuf)
 VALUES
-  (1, 'M', 'Blanc', '100% Coton', 'Zara',   1),
-  (2, 'L', 'Bleu',  'Denim',      "Levi's", 1);
+  (1, 'M', 'Blanc', '100% Coton', 'Zara', 1),
+  (2, 'L', 'Bleu', 'Denim', "Levi's", 1),
+  (3, 'S', 'Noir', 'Polyester', 'Nike', 2),
+  (3, 'M', 'Noir', 'Polyester', 'Nike', 3),
+  (3, 'XL', 'Gris', 'Coton', 'Nike', 1),
+  (4, 'L', 'Rouge', 'Coton Bio', 'H&M', 1),
+  (4, 'S', 'Rose', 'Coton Bio', 'H&M', 2),
+  (5, 'M', 'Vert', 'Lin', 'Zara', 1),
+  (5, 'L', 'Marron', 'Cuir', 'Zara', 1),
+  (6, 'XS', 'Jaune', 'Soie', 'Mango', 1),
+  (6, 'M', 'Orange', 'Viscose', 'Mango', 2),
+  (7, 'L', 'Beige', 'Laine', 'Uniqlo', 1),
+  (7, 'XL', 'Kaki', 'Coton', 'Uniqlo', 3),
+  (8, 'M', 'Violet', 'Polyamide', 'Decathlon', 4),
+  (9, 'S', 'Turquoise', 'Coton', 'Celio', 1),
+  (9, 'L', 'Blanc', 'Lin', 'Celio', 1),
+  (10, 'M', 'Bordeaux', 'Laine', 'Levi\'s', 2),
+  (10, 'XL', 'Bleu Foncé', 'Denim', 'Levi\'s', 1);
 ALTER TABLE electroniques MODIFY camera_mp VARCHAR(50);
 ALTER TABLE electroniques MODIFY sous_type VARCHAR(50);
 INSERT INTO electroniques 
@@ -596,16 +612,54 @@ INSERT INTO maison_decor (produit_id, piece, style, matiere, dimensions, marque)
 (12, 'Bureau', 'Ergonomique', 'Bois/Acier', '160x80cm', 'Logitech Desk'),
 (13, 'Chambre', 'Ambiance', 'Plastique', 'Small', 'Philips Hue');
 
-INSERT INTO tickets
-  (produit_id, evenement, lieu, date_evenement, type_place, places_restantes)
+INSERT INTO tickets  (produit_id, evenement, lieu, date_evenement, type_place, places_restantes)
 VALUES
-  (10, 'Gnawa World Music Festival', 'Essaouira', '2025-06-20', 'Standard', 500);
+  (1, 'Mawazine Festival', 'Rabat', '2025-05-16', 'VIP', 1200),
+(1, 'Mawazine Festival', 'Rabat', '2025-05-16', 'Standard', 400),
+(1, 'Mawazine Festival', 'Rabat', '2025-05-16', 'Gold', 800),
+(2, 'Jazzablanca', 'Casablanca', '2025-06-10', 'VIP', 900),
+(2, 'Jazzablanca', 'Casablanca', '2025-06-10', 'Standard', 300),
+(3, 'Timgad Festival', 'Algérie', '2025-07-05', 'Standard', 250),
+(4, 'Carthage Festival', 'Tunis', '2025-08-01', 'VIP', 750),
+(4, 'Carthage Festival', 'Tunis', '2025-08-01', 'Standard', 280),
+(5, 'Fes Sacred Music', 'Fès', '2025-05-30', 'VIP', 600),
+(5, 'Fes Sacred Music', 'Fès', '2025-05-30', 'Standard', 200),
+(6, 'Tanjazz', 'Tanger', '2025-09-15', 'Standard', 220),
+(7, 'Atlas Electronic', 'Marrakech', '2025-11-10', 'VIP', 550),
+(7, 'Atlas Electronic', 'Marrakech', '2025-11-10', 'Standard', 180),
+(8, 'Timitar Festival', 'Agadir', '2025-07-18', 'Standard', 150),
+(9, 'Boujloud Festival', 'Agadir', '2025-12-25', 'Standard', 100),
+(10, 'Gnawa World Music Festival', 'Essaouira', '2025-06-20', 'Standard', 500),
+(10, 'Gnawa World Music Festival', 'Essaouira', '2025-06-20', 'VIP', 1000),
+(10, 'Gnawa World Music Festival', 'Essaouira', '2025-06-20', 'Gold', 750),
+(11, 'L’Boulevard Festival', 'Casablanca', '2025-07-25', 'Standard', 150),
+(11, 'L’Boulevard Festival', 'Casablanca', '2025-07-25', 'VIP', 350),
+(12, 'Awrach Festival', 'Marrakech', '2025-10-05', 'Standard', 120),
+(13, 'Hob Festival', 'Rabat', '2025-09-20', 'Standard', 180),
+(14, 'Mogador Music Festival', 'Essaouira', '2025-04-10', 'Standard', 250),
+(15, 'Casablanca Festival', 'Casablanca', '2025-06-30', 'VIP', 500),
+(15, 'Casablanca Festival', 'Casablanca', '2025-06-30', 'Standard', 150);
+
 
 INSERT INTO commentaires (produit_id, auteur, texte, etoiles) VALUES
   (1, 'Ahmed', 'Tres confortable, je recommande !', 5),
-  (1, 'Sara',  'Bonne qualite pour le prix.',        4),
-  (2, 'Karim', 'Coupe parfaite.',                    5),
-  (3, 'Nadia', 'Excellent smartphone, camera incroyable.', 5);
+(1, 'Sara', 'Bonne qualite pour le prix.', 4),
+(2, 'Karim', 'Coupe parfaite.', 5),
+(3, 'Nadia', 'Excellent smartphone, camera incroyable.', 5),
+(3, 'Youssef', 'La batterie tient bien la journee.', 4),
+(3, 'Fatima', 'Ecran superbe mais un peu cher.', 4),
+(4, 'Hassan', 'Livre tres interessant, je l\'ai adore.', 5),
+(4, 'Leila', 'Histoire captivante, je recommande.', 5),
+(5, 'Omar', 'Tres bonne qualite pour ce prix.', 4),
+(5, 'Meryem', 'Conforme a la description.', 4),
+(6, 'Samir', 'Service client reactif et professionnel.', 5),
+(6, 'Nadia', 'Livraison rapide, bien emballe.', 5),
+(7, 'Karim', 'Produit conforme, satisfait.', 4),
+(8, 'Sara', 'Rapport qualite-prix excellent.', 5),
+(8, 'Ahmed', 'Je l\'utilise tous les jours, tres pratique.', 5),
+(9, 'Leila', 'Design magnifique, mais fragile.', 3),
+(10, 'Youssef', 'Fonctionne parfaitement bien.', 5),
+(10, 'Fatima', 'Un peu difficile a utiliser au debut.', 3);
 
 -- ============================================================
 -- SYSTEME LOGISTIQUE, FINANCE ET SAV
@@ -723,7 +777,21 @@ INSERT INTO entrepots (nom_entrepot, ville, adresse) VALUES
 ('Stock Central Casa', 'Casablanca', 'Tit Mellil'),
 ('Base Tanger Med', 'Tanger', 'Zone Franche Export'),
 ('Logistique Souss', 'Agadir', 'Ait Melloul'),
-('Entrepôt Bahja', 'Marrakech', 'Sidi Ghanem');
+('Entrepôt Bahja', 'Marrakech', 'Sidi Ghanem'),
+('Entrepôt Atlas', 'Fès', 'Zone Industrielle Doukkarat'),
+('Storage Rabat', 'Rabat', 'Technopolis Rabat-Shore'),
+('Dépôt Oriental', 'Oujda', 'Zone Franche d\'Oujda'),
+('Centre Logistique', 'Meknès', 'Route de Fès, Km 5'),
+('Entrepôt Sahel', 'El Jadida', 'Industrielle El Jadida'),
+('Stock Nord', 'Tétouan', 'Mghogha Industrial Park'),
+('Entrepôt Soleil', 'Beni Mellal', ' Industrielle Beni Mellal'),
+('Base Sud', 'Laâyoune', ' Industrielle Laâyoune'),
+('Logistique Centre', 'Settat', ' Industrielle Settat'),
+('Entrepôt Oasis', 'Ouarzazate', 'Route de Marrakech'),
+('Storage Atlas', 'Ifrane', 'Parc Industriel Ifrane'),
+('Dépôt Méditerranée', 'Nador', ' Franche Nador'),
+('Entrepôt Royal', 'Kénitra', 'Atlantic '),
+('Base Atlantique', 'Safi', ' Industrielle Safi');
 
 -- Stock Massif
 INSERT INTO stock_entrepot (entrepot_id, produit_id, quantite_dispo) VALUES 
@@ -738,7 +806,16 @@ INSERT INTO transporteurs (nom_societe, telephone, tarif_base, delai_estime_jour
 ('Amana Express', '0802006060', 25.00, 3),
 ('DHL International', '0522445566', 70.00, 1),
 ('Ghazala Messagerie', '0537778899', 20.00, 5),
-('CatLogistics', '0522009988', 30.00, 2);
+('CatLogistics', '0522009988', 30.00, 2),
+('MDS Transports', '0801112223', 28.00, 3),
+('UpS Maroc', '0522778899', 55.00, 2),
+('Express Cargo', '0533334455', 22.00, 4),
+('City Logistique', '0522990011', 18.00, 5),
+('FedEx Morocco', '0522667788', 80.00, 1),
+('Trans Azur', '0533221144', 15.00, 6),
+('Rapid Deliv', '0800556677', 32.00, 2),
+('Maroc Logistique', '0522334455', 40.00, 3),
+('Speed Cargo', '0800778899', 45.00, 2);
 
 -- Coupons Divers
 INSERT INTO coupons_avance (code, pourcentage_remise, date_fin, usage_max, usage_actuel) VALUES 
