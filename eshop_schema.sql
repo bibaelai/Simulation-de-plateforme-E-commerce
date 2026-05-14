@@ -868,7 +868,7 @@ USE eshop_db;
 
 -- TABLE : fournisseurs (Suppliers Management)
 -- Rôle : Gérer les entreprises qui nous vendent les produits (B2B)
-CREATE TABLE fournisseurs (
+CREATE TABLE IF NOT EXISTS fournisseurs (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom_societe VARCHAR(100) NOT NULL,
     contact_nom VARCHAR(50),
@@ -881,7 +881,7 @@ CREATE TABLE fournisseurs (
 
 --  TABLE : campagnes_marketing (Marketing Campaigns)
 -- Rôle : Suivre les publicités (Facebook Ads, Google Ads) et leur impact
-CREATE TABLE campagnes_marketing (
+CREATE TABLE IF NOT EXISTS campagnes_marketing (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom_campagne VARCHAR(100) NOT NULL,
     budget_alloue DECIMAL(10,2),
@@ -894,7 +894,7 @@ CREATE TABLE campagnes_marketing (
 
 -- TABLE : taxes_regionales (Regional Tax Management)
 -- Rôle : Gérer la TVA et taxes selon la ville ou le pays (Expansion internationale)
-CREATE TABLE taxes_regionales (
+CREATE TABLE IF NOT EXISTS taxes_regionales (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom_zone VARCHAR(50) NOT NULL, -- Ex: 'Maroc-Zone-Nord', 'Europe'
     taux_tva DECIMAL(5,2) NOT NULL,
@@ -904,7 +904,7 @@ CREATE TABLE taxes_regionales (
 
 -- TABLE : logs_activite_admin (Admin Audit Logs)
 -- Rôle : Tracer qui (Staff) a modifié quoi dans la base de données (Sécurité)
-CREATE TABLE logs_activite_admin (
+CREATE TABLE IF NOT EXISTS logs_activite_admin (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     admin_id INT UNSIGNED,
     action_type VARCHAR(50), -- Ex: 'UPDATE_PRICE', 'DELETE_USER'
@@ -915,7 +915,7 @@ CREATE TABLE logs_activite_admin (
 
 -- TABLE : abonnements_premium (Subscription Model)
 -- Rôle : Gérer les clients VIP qui paient un abonnement mensuel (Comme Amazon Prime)
-CREATE TABLE abonnements_premium (
+CREATE TABLE IF NOT EXISTS abonnements_premium (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     client_id INT UNSIGNED NOT NULL,
     type_plan ENUM('Mensuel', 'Annuel') DEFAULT 'Mensuel',
