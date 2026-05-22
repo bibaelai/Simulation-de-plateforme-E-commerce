@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eShop</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     SPLASH
+════════════════════════════════════ -->
+<div id="splash">
+  <div class="splash-logo">e<span>Shop</span></div>
+  <div class="splash-tagline">Votre marketplace de confiance</div>
+  <div class="splash-line"></div>
+  <button class="splash-enter" onclick="enterSite()">Entrer dans la boutique</button>
+</div>
+
+<!-- ════════════════════════════════════
+     MUSIC PLAYER
+════════════════════════════════════ -->
+<div id="music-player" class="hidden">
+  <div class="music-wave" id="music-wave">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <span class="music-label" id="music-label">Jazz Lounge</span>
+  <button class="music-btn" id="music-btn" onclick="toggleMusic()">⏸</button>
+</div>
+<audio id="bg-music" loop>
+  <source src="http://127.0.0.1:3000/music/song.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ════════════════════════════════════
+     NAVBAR
+════════════════════════════════════ -->
+<nav class="navbar navbar-expand-lg" id="main-navbar" style="display:none;">
+  <div class="container">
+    <span class="navbar-brand" onclick="go('home')" style="cursor:pointer;">e<em>Shop</em></span>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navC">
+      <span style="color:var(--blue);">☰</span>
+    </button>
+    <div class="collapse navbar-collapse" id="navC">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><span class="nav-link" id="nl-home" onclick="go('home')">Accueil</span></li>
+        <li class="nav-item"><span class="nav-link" id="nl-catalogue" onclick="go('catalogue')">Catalogue</span></li>
+      </ul>
+      <ul class="navbar-nav gap-1 align-items-center">
+        <li class="nav-item" id="nl-login-item">
+          <span class="nav-link" onclick="go('login')">Connexion</span>
+        </li>
+        <li class="nav-item dropdown" id="nl-user-item" style="display:none;">
+          <span class="nav-link dropdown-toggle" id="nl-user-name" data-bs-toggle="dropdown" style="cursor:pointer;"></span>
+          <ul class="dropdown-menu dropdown-menu-end" style="background:var(--navy-2);border:1px solid var(--blue-dark);border-radius:0;">
+          <li id="nav-orders-link"><span class="dropdown-item text-white" style="font-size:0.78rem;cursor:pointer;" onclick="go('orders')">Mes commandes</span></li>
+          <li id="nav-seller-link" style="display:none;"><span class="dropdown-item text-white" style="font-size:0.78rem;cursor:pointer;" onclick="go('seller')">Mon espace vendeur</span></li>
+          <li><hr class="dropdown-divider border-secondary"></li>
+          <li><span class="dropdown-item text-warning" style="font-size:0.78rem;cursor:pointer;" onclick="doLogout()">Déconnexion</span></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <span class="nav-link d-flex align-items-center" id="nl-cart" onclick="go('cart')" style="cursor:pointer;">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <span id="cart-badge" class="ms-1">0</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════
+     VIEWS
+════════════════════════════════════ -->
+
+<!-- HOME -->
+<div class="view" id="view-home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container position-relative" style="z-index:1;">
+      <div class="col-lg-6">
+        <div class="hero-eyebrow">Bienvenue sur eShop</div>
+        <h1>La Qualité<br><em>à Votre</em><br>Service</h1>
+        <p>Découvrez notre sélection de produits soigneusement choisis — mode, tech, maison et plus encore.</p>
+        <div class="hero-btns">
+          <button class="btn-blue" onclick="go('catalogue')">Explorer le catalogue</button>
+          <button class="btn-outline-blue" onclick="goPromo()">Promotions</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero-deco d-none d-lg-flex">
+      <span class="hero-deco-text">eShop</span>
+    </div>
+  </section>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="container">
+      <div class="row g-3 text-center">
+        <div class="col-6 col-md-3">
+          <div class="stat-num" id="home-stat-prod">—</div>
+          <div class="stat-lbl">Produits</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-num">8</div>
+          <div class="stat-lbl">Catégories</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-num">25</div>
+          <div class="stat-lbl">MAD livraison</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-num">100%</div>
+          <div class="stat-lbl">Satisfait ou remboursé</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <!-- Categories -->
+    <p class="text-uppercase" style="font-size:0.62rem;letter-spacing:0.2em;color:var(--muted);">Parcourir par</p>
+    <h2 class="section-title mb-4">Catégories</h2>
+    <div class="d-flex flex-wrap gap-2 mb-5">
+      <button class="cat-pill" onclick="goCat('')">Tous</button>
+      <button class="cat-pill" onclick="goCat('Vêtement')">👗 Vêtements</button>
+      <button class="cat-pill" onclick="goCat('Électronique')">📱 Électronique</button>
+      <button class="cat-pill" onclick="goCat('Livre')">📚 Livres</button>
+      <button class="cat-pill" onclick="goCat('Sport & Fitness')">🏋️ Sport</button>
+      <button class="cat-pill" onclick="goCat('Alimentation')">🥗 Alimentation</button>
+      <button class="cat-pill" onclick="goCat('Maison')">🏠 Maison</button>
+      <button class="cat-pill" onclick="goCat('Ticket')">🎟️ Tickets</button>
+      <button class="cat-pill" onclick="goCat('Ordinateur')">💻 Ordinateurs</button>
+    </div>
+
+    <hr class="blue-divider">
+
+    <!-- Promotions -->
+    <p class="text-uppercase" style="font-size:0.62rem;letter-spacing:0.2em;color:var(--muted);">Offres exclusives</p>
+    <h2 class="section-title center text-center mb-2">Promotions du moment</h2>
+    <p class="text-center mb-5" style="font-size:0.82rem;color:var(--muted);">Des prix réduits, pour une durée limitée</p>
+    <div class="row g-4" id="home-promos">
+      <div class="col-12 text-center py-4"><div class="spinner-blue mx-auto"></div></div>
+    </div>
+    <div class="text-center mt-4">
+      <button class="btn-outline-blue" onclick="goPromo()">Voir toutes les promotions</button>
+    </div>
+
+    <hr class="blue-divider">
+
+    <!-- Featured -->
+    <p class="text-uppercase" style="font-size:0.62rem;letter-spacing:0.2em;color:var(--muted);">Sélection</p>
+    <h2 class="section-title mb-2">Produits phares</h2>
+    <p class="mb-5" style="font-size:0.82rem;color:var(--muted);">Notre sélection du moment</p>
+    <div class="row g-4" id="home-featured">
+      <div class="col-12 text-center py-4"><div class="spinner-blue mx-auto"></div></div>
+    </div>
+    <div class="text-center mt-4">
+      <button class="btn-blue" onclick="go('catalogue')">Voir tout le catalogue</button>
+    </div>
+
+    <hr class="blue-divider">
+
+    <!-- Promo banner -->
+    <div class="promo-banner">
+      <p>🎉 Code promo <strong>PROMO123</strong> — <strong>20% de réduction</strong> sur votre commande</p>
+      <button class="btn-blue" onclick="go('catalogue')" style="padding:0.45rem 1.3rem;">En profiter</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container text-center">
+      <div class="ft-brand mb-1">eSHOP</div>
+      <p>© 2025 eShop — Tous droits réservés</p>
+    </div>
+  </footer>
+</div>
+
+<!-- CATALOGUE -->
+<div class="view" id="view-catalogue">
+  <div class="page-header">
+    <div class="container">
+      <h1>Notre Catalogue</h1>
+      <p>Découvrez notre sélection complète</p>
+    </div>
+  </div>
+  <div class="container py-5">
+    <div class="row g-4">
+      <div class="col-lg-3">
+        <div class="filter-sidebar">
+          <div class="filter-title">Catégories</div>
+          <button class="filter-btn active" data-cat="" onclick="setCat(this,'')">Tous les produits</button>
+          <button class="filter-btn" data-cat="Vêtement" onclick="setCat(this,'Vêtement')">Vêtements</button>
+          <button class="filter-btn" data-cat="Électronique" onclick="setCat(this,'Électronique')">Électronique</button>
+          <button class="filter-btn" data-cat="Ordinateur" onclick="setCat(this,'Ordinateur')">Ordinateurs</button>
+          <button class="filter-btn" data-cat="Livre" onclick="setCat(this,'Livre')">Livres</button>
+          <button class="filter-btn" data-cat="Sport & Fitness" onclick="setCat(this,'Sport & Fitness')">Sport & Fitness</button>
+          <button class="filter-btn" data-cat="Alimentation" onclick="setCat(this,'Alimentation')">Alimentation</button>
+          <button class="filter-btn" data-cat="Maison" onclick="setCat(this,'Maison')">Maison</button>
+          <button class="filter-btn" data-cat="Ticket" onclick="setCat(this,'Ticket')">Tickets</button>
+          <hr style="border-color:var(--border);margin:1rem 0;">
+          <div class="filter-title">Prix (MAD)</div>
+          <input type="number" class="form-control form-control-sm mb-2" id="cat-pmin" placeholder="Min">
+          <input type="number" class="form-control form-control-sm mb-2" id="cat-pmax" placeholder="Max">
+          <button class="btn-navy w-100" style="padding:0.45rem;" onclick="applyPriceFilter()">Appliquer</button>
+          <hr style="border-color:var(--border);margin:1rem 0;">
+          <button class="filter-btn" id="cat-promo-btn" onclick="togglePromoFilter()">Promotions seulement</button>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
+          <div class="search-wrap flex-grow-1">
+            <input type="text" id="cat-search" placeholder="Rechercher un produit...">
+            <button onclick="doSearch()">🔍</button>
+          </div>
+          <select class="form-select" style="width:auto;font-size:0.78rem;" id="cat-sort" onchange="renderCatalogue()">
+            <option value="">Trier par</option>
+            <option value="prix-asc">Prix ↑</option>
+            <option value="prix-desc">Prix ↓</option>
+            <option value="note">Meilleures notes</option>
+            <option value="nom">Nom A-Z</option>
+          </select>
+        </div>
+        <p id="cat-count" style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;"></p>
+        <div class="row g-3" id="cat-grid">
+          <div class="col-12 text-center py-4"><div class="spinner-blue mx-auto"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><div class="container text-center"><div class="ft-brand mb-1">eSHOP</div><p>© 2025 eShop</p></div></footer>
+</div>
+
+<!-- PRODUCT DETAIL -->
+<div class="view" id="view-product">
+  <div class="container py-5" id="product-inner">
+    <div class="text-center py-5"><div class="spinner-blue mx-auto"></div></div>
+  </div>
+  <footer><div class="container text-center"><div class="ft-brand mb-1">eSHOP</div><p>© 2025 eShop</p></div></footer>
+</div>
+
+<!-- LOGIN -->
+<div class="view" id="view-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">eShop</div>
+      <p class="text-center mb-4" style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Votre marketplace</p>
+      <div class="tab-row">
+        <button class="tab-pill active" id="tp-login" onclick="switchTab('login')">Connexion</button>
+        <button class="tab-pill" id="tp-reg" onclick="switchTab('register')">Inscription</button>
+      </div>
+      <div class="err-box" id="auth-err"></div>
+
+      <!-- Login -->
+      <form id="f-login" onsubmit="doLogin(event)">
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="li-email" placeholder="votre@email.com" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Mot de passe</label>
+          <input type="password" class="form-control" id="li-pwd" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-blue w-100" id="li-btn">Se connecter</button>
+        <p class="text-center mt-3" style="font-size:0.8rem;color:var(--muted);">
+          Pas de compte ? <span style="color:var(--blue-dark);cursor:pointer;" onclick="switchTab('register')">S'inscrire</span>
+        </p>
+      </form>
+
+      <!-- Register -->
+      <form id="f-reg" style="display:none;" onsubmit="doRegister(event)">
+        <div class="role-row">
+          <button type="button" class="role-btn active" id="rb-client" onclick="setRole('client')">👤 Client</button>
+          <button type="button" class="role-btn" id="rb-vendeur" onclick="setRole('vendeur')">🏪 Vendeur</button>
+        </div>
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="rg-prenom" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Nom</label>
+            <input type="text" class="form-control" id="rg-nom" required>
+          </div>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="rg-email" required>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Téléphone</label>
+          <input type="tel" class="form-control" id="rg-tel" placeholder="+212 6XX XXX XXX">
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Mot de passe</label>
+          <input type="password" class="form-control" id="rg-pwd" required>
+        </div>
+        <div class="mt-3" id="boutique-wrap" style="display:none;">
+          <label class="form-label">Nom de la boutique</label>
+          <input type="text" class="form-control" id="rg-boutique">
+        </div>
+        <button type="submit" class="btn-blue w-100 mt-4" id="rg-btn">Créer mon compte</button>
+        <p class="text-center mt-3" style="font-size:0.8rem;color:var(--muted);">
+          Déjà un compte ? <span style="color:var(--blue-dark);cursor:pointer;" onclick="switchTab('login')">Se connecter</span>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="view" id="view-cart">
+  <div class="page-header">
+    <div class="container">
+      <h1>Mon Panier</h1>
+      <p>Vérifiez vos articles avant commande</p>
+    </div>
+  </div>
+  <div class="container py-5" id="cart-inner">
+    <div class="text-center py-4"><div class="spinner-blue mx-auto"></div></div>
+  </div>
+  <footer><div class="container text-center"><div class="ft-brand mb-1">eSHOP</div><p>© 2025 eShop</p></div></footer>
+</div>
+
+<!-- ORDERS -->
+<div class="view" id="view-orders">
+  <div class="page-header">
+    <div class="container">
+      <h1>Mes Commandes</h1>
+      <p>Historique de vos achats</p>
+    </div>
+  </div>
+  <div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div id="user-avatar" style="width:46px;height:46px;background:var(--navy);border:1px solid var(--blue-dark);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:var(--blue);font-size:1.3rem;">?</div>
+      <div>
+        <div id="user-fullname" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;"></div>
+        <div id="user-email-lbl" style="font-size:0.72rem;color:var(--muted);letter-spacing:0.08em;"></div>
+      </div>
+    </div>
+    <div id="orders-inner">
+      <div class="text-center py-4"><div class="spinner-blue mx-auto"></div></div>
+    </div>
+  </div>
+  <footer><div class="container text-center"><div class="ft-brand mb-1">eSHOP</div><p>© 2025 eShop</p></div></footer>
+</div>
+<!-- SELLER DASHBOARD -->
+<div class="view" id="view-seller">
+  <div class="page-header">
+    <div class="container">
+      <h1>Espace Vendeur</h1>
+      <p>Gérez vos produits et suivez vos ventes</p>
+    </div>
+  </div>
+  <div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div id="seller-avatar" style="width:46px;height:46px;background:var(--navy);border:1px solid var(--blue-dark);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:var(--blue);font-size:1.3rem;">🏪</div>
+      <div>
+        <div id="seller-name" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;"></div>
+        <div id="seller-boutique" style="font-size:0.72rem;color:var(--muted);letter-spacing:0.08em;"></div>
+      </div>
+    </div>
+    
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="seller-stat-card">
+          <div class="seller-stat-num" id="seller-stat-produits">—</div>
+          <div class="seller-stat-lbl">Produits en ligne</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="seller-stat-card">
+          <div class="seller-stat-num" id="seller-stat-ca">—</div>
+          <div class="seller-stat-lbl">Chiffre d'affaires (MAD)</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="seller-stat-card">
+          <div class="seller-stat-num" id="seller-stat-stock">—</div>
+          <div class="seller-stat-lbl">Stock total</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="blue-divider">
+
+    <p class="text-uppercase" style="font-size:0.62rem;letter-spacing:0.2em;color:var(--muted);">Nouveau</p>
+    <h2 class="section-title mb-4">Ajouter un produit</h2>
+    <div class="seller-form-card">
+      <form id="seller-product-form" onsubmit="createProduct(event)">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nom du produit *</label>
+            <input type="text" class="form-control" id="sp-nom" required placeholder="Ex: iPhone 15">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Catégorie *</label>
+            <select class="form-select" id="sp-categorie" required onchange="updateSellerForm()">
+              <option value="">Choisir...</option>
+              <option value="Vêtement">👗 Vêtement</option>
+              <option value="Électronique">📱 Électronique</option>
+              <option value="Ordinateur">💻 Ordinateur</option>
+              <option value="Livre">📚 Livre</option>
+              <option value="Sport & Fitness">🏋️ Sport & Fitness</option>
+              <option value="Alimentation">🥗 Alimentation</option>
+              <option value="Maison">🏠 Maison</option>
+              <option value="Ticket">🎟️ Ticket</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="sp-description" rows="2" placeholder="Décrivez votre produit..."></textarea>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Votre prix (MAD) *</label>
+            <input type="number" class="form-control" id="sp-prix" required min="1" step="0.01" placeholder="100">
+            <small style="font-size:0.7rem;color:var(--muted);">Prix affiché aux clients: <strong id="sp-prix-final" style="color:var(--blue-dark);">—</strong> MAD (+20%)</small>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Stock *</label>
+            <input type="number" class="form-control" id="sp-stock" required min="0" value="10">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="sp-image" placeholder="/uploads/produits/photo.jpg">
+          </div>
+        </div>
+        <div id="sp-extra-fields" class="row g-3 mt-1"></div>
+        <div class="mt-3">
+          <button type="submit" class="btn-blue" id="sp-btn">Publier le produit</button>
+          <span id="sp-msg" style="font-size:0.82rem;margin-left:1rem;"></span>
+        </div>
+      </form>
+    </div>
+
+    <hr class="blue-divider">
+
+    <p class="text-uppercase" style="font-size:0.62rem;letter-spacing:0.2em;color:var(--muted);">Inventaire</p>
+    <h2 class="section-title mb-4">Mes produits</h2>
+    <div id="seller-products">
+      <div class="text-center py-4"><div class="spinner-blue mx-auto"></div></div>
+    </div>
+  </div>
+  <footer><div class="container text-center"><div class="ft-brand mb-1">eSHOP</div><p>© 2025 eShop</p></div></footer>
+</div>
+<!-- CHECKOUT MODAL -->
+<div class="modal fade" id="checkoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:0;border:none;border-top:3px solid var(--blue);">
+      <div class="modal-header" style="background:var(--navy);border:none;padding:1.3rem 1.5rem;">
+        <h5 class="modal-title" style="font-family:'Cormorant Garamond',serif;color:var(--blue);font-size:1.4rem;">Finaliser la commande</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <label class="form-label">Adresse de livraison</label>
+        <textarea class="form-control mb-3" id="co-address" rows="3" placeholder="Rue, ville, code postal..."></textarea>
+        <label class="form-label">Paiement</label>
+        <div style="border:1px solid var(--border);padding:0.9rem 1.1rem;margin-bottom:0.6rem;cursor:pointer;transition:border-color var(--tr);" id="pm-carte" onclick="setPm('carte')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor=pmActive==='carte'?'var(--blue)':'var(--border)'">
+          <span style="font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;">💳 Carte bancaire</span>
+        </div>
+        <div style="border:1px solid var(--border);padding:0.9rem 1.1rem;cursor:pointer;transition:border-color var(--tr);" id="pm-paypal" onclick="setPm('paypal')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor=pmActive==='paypal'?'var(--blue)':'var(--border)'">
+          <span style="font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;">🅿️ PayPal</span>
+        </div>
+        <div class="mt-3 p-3" style="background:var(--blue-pale);border:1px solid var(--border);">
+          <div class="d-flex justify-content-between" style="font-size:0.83rem;">
+            <span>Sous-total</span><span id="co-sub">—</span>
+          </div>
+          <div class="d-flex justify-content-between mt-1" style="font-size:0.83rem;">
+            <span>Livraison</span><span>25.00 MAD</span>
+          </div>
+          <div class="d-flex justify-content-between mt-2 pt-2" style="border-top:1px solid var(--border);">
+            <strong style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;">Total</strong>
+            <strong style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--blue-dark);" id="co-total">—</strong>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 p-4 pt-0">
+        <button class="btn-blue w-100" id="co-btn" onclick="confirmOrder()">Confirmer la commande</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
