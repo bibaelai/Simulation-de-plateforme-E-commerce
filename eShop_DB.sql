@@ -216,25 +216,25 @@ FOREIGN KEY (id_commande) REFERENCES commandes(id) ON DELETE CASCADE
 
 CREATE OR REPLACE VIEW vue_catalogue AS
 SELECT
-[p.id](http://p.id/), p.nom, p.prix, p.prix_original, p.description,
+p.id, p.nom, p.prix, p.prix_original, p.description,
 p.stock, p.note, p.categorie, p.statut, p.en_promotion, p.image_url,
 GROUP_CONCAT(DISTINCT g.nom ORDER BY g.nom SEPARATOR ', ') AS genres
 FROM produits p
-LEFT JOIN livres       l  ON [p.id](http://p.id/) = l.id_produit
+LEFT JOIN livres       l  ON p.id = l.id_produit
 LEFT JOIN livre_genres lg ON l.id_produit = lg.id_livre
-LEFT JOIN genres       g  ON lg.id_genre = [g.id](http://g.id/)
-GROUP BY [p.id](http://p.id/);
+LEFT JOIN genres       g  ON lg.id_genre = g.id
+GROUP BY p.id;
 
 CREATE OR REPLACE VIEW vue_livres AS
 SELECT
-[p.id](http://p.id/), p.nom AS titre, l.auteur, l.isbn, l.editeur, l.langue,
+p.id, p.nom AS titre, l.auteur, l.isbn, l.editeur, l.langue,
 p.prix, p.stock, p.statut, p.image_url,
 GROUP_CONCAT(g.nom ORDER BY g.nom SEPARATOR ', ') AS genres
 FROM produits p
-JOIN livres       l  ON [p.id](http://p.id/) = l.id_produit
+JOIN livres       l  ON p.id = l.id_produit
 LEFT JOIN livre_genres lg ON l.id_produit = lg.id_livre
-LEFT JOIN genres       g  ON lg.id_genre  = [g.id](http://g.id/)
-GROUP BY [p.id](http://p.id/);
+LEFT JOIN genres       g  ON lg.id_genre  = g.id
+GROUP BY p.id;
 
 CREATE OR REPLACE VIEW vue_promotions AS
 SELECT id, nom, prix, prix_original,
