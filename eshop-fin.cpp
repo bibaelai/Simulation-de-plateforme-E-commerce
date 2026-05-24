@@ -1,3 +1,9 @@
+// ============================================================
+//  eShop — main.cpp  (version corrigée & intégrée)
+//  Compile :
+//    g++ -std=c++17 main.cpp -o eshop \
+//        $(mysql_config --cflags --libs)
+// ============================================================
 
 #include <iostream>
 #include <string>
@@ -932,9 +938,10 @@ public:
     // Sauvegarde la commande complète dans la DB et retourne son id
     int sauvegarderDansDB(Database& db, int idClient) {
         db.execute(
-            "INSERT INTO commandes (id_client, adresse_livraison) VALUES ("
+            "INSERT INTO commandes (id_client, adresse_livraison, statut_commande) VALUES ("
             + to_string(idClient) + ", "
-            + db.safe(adresseLivraison) + ")"
+            + db.safe(adresseLivraison) + ","
+            + db.safe("Livrée") + ")"
         );
         int idCmd = db.lastInsertId();
         idCommande = idCmd;
