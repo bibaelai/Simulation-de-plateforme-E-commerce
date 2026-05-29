@@ -1,9 +1,3 @@
-// ============================================================
-//  eShop — main.cpp  (version corrigée & intégrée)
-//  Compile :
-//    g++ -std=c++17 main.cpp -o eshop \
-//        $(mysql_config --cflags --libs)
-// ============================================================
 
 #include <iostream>
 #include <string>
