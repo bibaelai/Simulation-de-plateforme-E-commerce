@@ -17,14 +17,15 @@
 ##  Structure du Projet
 
 ```
-├── eshop-fin.cpp       # Serveur backend C++ (API HTTP + classes POO)
-├── index.html          # Frontend (interface web de la boutique)
-├── script.js           # Logique frontend (appels API, rendu UI)
-├── styles.css          # Styles
-├── eShop_DB.sql        # Schéma complet de la base de données MySQL + données
-├── httplib.h           # Bibliothèque serveur HTTP (header-only)
-├── json.hpp            # Bibliothèque JSON (header-only)
-└── uml_diagram.png     # Diagramme de classes UML
+├── eshop-fin.cpp            # Serveur backend C++ (API HTTP + classes POO)
+├── index.html               # Frontend (interface web de la boutique)
+├── script.js                # Logique frontend (appels API, rendu UI)
+├── styles.css               # Styles
+├── eShop_DB.sql             # Schéma complet de la base de données MySQL + données
+├── httplib.h                # Bibliothèque serveur HTTP (header-only)
+├── json.hpp                 # Bibliothèque JSON (header-only)
+├── uml_diagram.png          # Diagramme de classes UML
+└── eshop_Presentation.pptx  # Presentation Explicative du Project
 ```
 
 ---
